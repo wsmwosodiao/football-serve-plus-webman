@@ -28,7 +28,7 @@ class Task
 
 
         // 每3分钟的10秒分钟执行一次【赛事图片推送】
-        new Crontab('10 */3 * * * *', function(){
+        new Crontab('10 */2 * * * *', function(){
             RobotPushService::make()->pushMacth();
             echo "机器人赛事图片推送：".date('Y-m-d H:i:s')."\n";
         });
@@ -58,7 +58,7 @@ class Task
         });
 
         // 每3分钟的40秒分钟执行一次【用户赛事信息】
-        new Crontab('30 */3 * * * *', function(){
+        new Crontab('30 */2 * * * *', function(){
             RobotPushUserService::make()->pushMacthPicture();
             echo "机器人用户赛事信息推送：".date('Y-m-d H:i:s')."\n";
         });
