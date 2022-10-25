@@ -24,7 +24,7 @@ class RobotPushService extends BaseService
     protected string $pushUrl='http://192.168.6.209/api/v1/send';
     protected string $pushUserUrl='http://192.168.6.209/api/v1/sendUser';
     protected $httpWorkerman;
-    protected bool $is_push=false; //是否正式推送
+    protected bool $is_push=true; //是否正式推送
     protected bool $is_Debug=false;
 
     protected string $bot_name='55data';
