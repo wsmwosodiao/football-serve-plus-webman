@@ -20,7 +20,6 @@ use Workerman\Worker;
 class RobotPushUserService extends BaseService
 {
 
-    protected string $pushUrl='http://192.168.6.209/api/v1/send';
     protected string $pushUserUrl='http://192.168.6.209/api/v1/sendUser';
     protected $httpWorkerman;
     protected bool $is_push=false; //是否正式推送
@@ -33,7 +32,6 @@ class RobotPushUserService extends BaseService
     {
         $this->is_Debug=Worker::$daemonize;//true 正式环境
         if($this->is_Debug){
-            $this->pushUrl='https://api.jooegg.net/api/v1/send';
             $this->pushUserUrl='https://api.jooegg.net/api/v1/sendUser';
         }
         $this->httpWorkerman=new Client();//请求类
