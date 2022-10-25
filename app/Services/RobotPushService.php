@@ -53,7 +53,9 @@ class RobotPushService extends BaseService
             $id=Carbon::now()->format('YmdH');
             if ($this->is_Debug) {
                 $url=$this->getUrl."type=$type&id=$id&lang=$lang&odds=0&date=";
+                Log::info("获取24小时赛事图片处理:".$url);
                 $this->httpWorkerman->get($url);
+
             }
             $count++;
         }
@@ -72,7 +74,7 @@ class RobotPushService extends BaseService
             ->where('date', '<', Carbon::now()->addMinutes(130))
             ->where('date', '>', Carbon::now()->subMinutes(130))
             ->where('status', '<>', false)
-            ->chunk(1, function ($list) use (&$count) {
+            ->chunk(10, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
                     $this->getTodayMacthTwoHours($item);
@@ -97,7 +99,7 @@ class RobotPushService extends BaseService
             })->first();
             $odds=(float)$this->toDecimal2($teacherFixture?->odds * 100);
             $type=1;
-            if($odds>2.5){
+            if($odds>2){
                 $type=2;
             }
             $count=0;
@@ -109,14 +111,16 @@ class RobotPushService extends BaseService
                     $footBallFixturePush=FootBallFixturePush::query()->where('type',$type)->where('lang',$lang)->where('id',$footBallFixture->id)->first();
                     if(!$footBallFixturePush){
                         $url=$this->getUrl."type=$type&id=$footBallFixture->id&lang=$lang&odds=$odds&date=$footBallFixture->date";
+                        Log::info("获取2小时赛事图片处理:".$url);
                         if ($this->is_Debug) {
+                            Log::info("获取2小时赛事图片处理-请求:".$url);
                             $this->httpWorkerman->get($url);
                         }
                         $count++;
                     }
                 }
             }
-            Log::info("获取赛事推广图片-赛事：" . $footBallFixture->id." 总共：$count_all ，成功：".$count);
+            Log::info("获取2小时赛事推广图片-赛事：" . $footBallFixture->id." 总共：$count_all ，成功：".$count);
             return true;
         } catch (\Exception $exception) {
             Log::error("机器获取推广图片：" . $exception->getMessage());
