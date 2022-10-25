@@ -120,7 +120,7 @@ class RobotPushUserService extends BaseService
             ->where('status', true)
             ->where('is_push', true)
             ->where('is_push_user', false)
-            ->where('push_time', '>', Carbon::now()->subMinutes(5))//5分钟内推送过的赛事
+            //->where('push_time', '>', Carbon::now()->subMinutes(5))//5分钟内推送过的赛事
             ->chunk(50, function ($list) use (&$count) {
                 foreach ($list as $item) {
                     $this->pushMacthUserPicture($item);
