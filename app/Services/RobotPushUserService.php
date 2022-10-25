@@ -160,9 +160,9 @@ class RobotPushUserService extends BaseService
                                     }
                                     $params['bot_name']=$this->bot_name;//强制设置机器人为55data
                                     Log::info("推送赛事给用户-标题",["params"=>$params,"referral_code"=>$referral_code]);
-//                                    if($this->is_push){
+                                    if($this->is_push){
                                         $this->httpWorkerman->post($this->pushUserUrl, $params);
-//                                    }
+                                    }
                                 }
                                 if($images){
                                     $i=1;
@@ -181,9 +181,10 @@ class RobotPushUserService extends BaseService
                                             }
                                             $params['bot_name']=$this->bot_name;//强制设置机器人为55data
                                             Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code]);
-//                                            if($this->is_push){
-                                                $this->httpWorkerman->post($this->pushUserUrl, $params);
-//                                            }
+                                            if($this->is_push){
+                                                $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
+                                                Log::info("推送赛事给用户-图片-返回",["res"=>$res,"referral_code"=>$referral_code]);
+                                            }
                                             $i++;
                                         }
                                     }
@@ -206,9 +207,9 @@ class RobotPushUserService extends BaseService
                                     }
                                     $params['bot_name']=$this->bot_name;//强制设置机器人为55data
                                     Log::info("推送赛事给用户-简介",["params"=>$params,"referral_code"=>$referral_code]);
-//                                    if($this->is_push){
+                                    if($this->is_push){
                                         $this->httpWorkerman->post($this->pushUserUrl, $params);
-//                                    }
+                                    }
                                 }
 
                             }
