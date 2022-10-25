@@ -23,7 +23,7 @@ class RobotPushService extends BaseService
 
     protected string $getUrl='https://snap.yfb.net/snapshot?';
 
-    protected string $pushUrl='http://192.168.6.209/api/v1/send';
+    protected string $pushUrl='https://api.jooegg.net/api/v1/send';//'http://192.168.6.209/api/v1/send';
     protected $httpWorkerman;
     protected bool $is_push=true; //是否正式推送
     protected bool $is_Debug=false;
