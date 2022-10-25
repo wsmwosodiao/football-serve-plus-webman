@@ -15,6 +15,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property integer $sleep_second 睡眠多少秒
  * @property boolean $status //是否推送成功
  * @property boolean $is_push //是否可以推送
+ * @property boolean $is_push_user //是否是用户类型
  */
 class FootBallFixturePushAll extends Model
 {
@@ -38,6 +39,7 @@ class FootBallFixturePushAll extends Model
         'sleep_second'=> 'integer',
         'status' => 'boolean',
         'is_push' => 'boolean',
+        'is_push_user' => 'boolean',
     ];
 
     public const PUSHTYPE = [

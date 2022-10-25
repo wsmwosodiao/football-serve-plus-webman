@@ -11,6 +11,8 @@ use App\model\Sport\FootBallFixturePushAll;
 use App\model\Sport\FootballTeacherFixture;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use support\Log;
 use Workerman\Http\Client;
 use Workerman\Worker;
@@ -244,6 +246,7 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
+            ->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(10, function ($list) use (&$count) {
                 $count = $count + count($list);
@@ -311,7 +314,7 @@ class RobotPushService extends BaseService
                         }
                         $img=data_get($vinfo, "icon","");
                         if($img){
-                            $img=ImageUrl($img);
+                            $img=$this->imageUrl($img);
                             $params=[
                                 "level"=>$footBallFixturePushAll->type,
                                 "delay"=>$delay-3,
@@ -344,6 +347,31 @@ class RobotPushService extends BaseService
             Log::error("机器自定义推送错误：" . $exception->getMessage());
             return false;
         }
+    }
+
+
+
+    /**
+     * 获取图片地址
+     * @param $path
+     * @param int $w
+     * @param string|null $style
+     * @return mixed
+     */
+    public function imageUrl($path, int $w = 700, string $style = null): mixed
+    {
+        if (empty($path)) return $path;
+        if (Str::contains($path, '//')) {
+            return $path;
+        }
+        $x_style = "";
+        if ($w && !$style) {
+            $x_style = "?x-oss-process=image/resize,w_$w/quality,q_90";
+        }
+        if ($style) {
+            $x_style = "?x-oss-process={$style}";
+        }
+        return Storage::disk("aliyun")->url($path . $x_style);
     }
 
 }

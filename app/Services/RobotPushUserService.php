@@ -11,6 +11,7 @@ use App\model\User;
 use App\model\UserData;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use support\Log;
 use Workerman\Http\Client;
@@ -332,6 +333,30 @@ class RobotPushUserService extends BaseService
         $itemLang = data_get($allLang, $slug);
         return data_get($itemLang, $local);
 
+    }
+
+
+    /**
+     * 获取图片地址
+     * @param $path
+     * @param int $w
+     * @param string|null $style
+     * @return mixed
+     */
+    public function imageUrl($path, int $w = 700, string $style = null): mixed
+    {
+        if (empty($path)) return $path;
+        if (Str::contains($path, '//')) {
+            return $path;
+        }
+        $x_style = "";
+        if ($w && !$style) {
+            $x_style = "?x-oss-process=image/resize,w_$w/quality,q_90";
+        }
+        if ($style) {
+            $x_style = "?x-oss-process={$style}";
+        }
+        return Storage::disk("aliyun")->url($path . $x_style);
     }
 
 }
