@@ -22,7 +22,7 @@ use Workerman\Worker;
 class RobotPushUserService extends BaseService
 {
 
-    protected string $pushUserUrl='http://192.168.6.209/api/v1/sendUser';
+    protected string $pushUserUrl='https://api.jooegg.net/api/v1/sendUser';//'http://192.168.6.209/api/v1/sendUser';
     protected $httpWorkerman;
     protected bool $is_push=true; //是否正式推送
     protected bool $is_Debug=false;
@@ -180,7 +180,7 @@ class RobotPushUserService extends BaseService
                                                 $params['country']=$footBallFixturePush->country;
                                             }
                                             $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                                            Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code,'url'=>$this->pushUserUrl]);
+                                            Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code,'url'=>$this->pushUserUrl,"is_Debug"=>$this->is_Debug]);
                                             if($this->is_push){
                                                 $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
                                                 Log::info("推送赛事给用户-图片-返回",["res"=>$res,"referral_code"=>$referral_code]);
