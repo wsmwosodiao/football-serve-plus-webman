@@ -314,7 +314,7 @@ class RobotPushService extends BaseService
                         }
                         $img=data_get($vinfo, "icon","");
                         if($img){
-                            $img=$this->imageUrl($img);
+                            $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
                             $params=[
                                 "level"=>$footBallFixturePushAll->type,
                                 "delay"=>$delay-3,
