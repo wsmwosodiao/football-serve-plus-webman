@@ -9,6 +9,7 @@ use App\model\Notification;
 use App\model\Sport\FootBallFixturePush;
 use App\model\User;
 use App\model\UserData;
+use App\model\UserRobotSubscribe;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +46,7 @@ class RobotPushUserService extends BaseService
     public function pushMacthNotification()
     {
         $count = 0;
-        $ids=UserData::query()->where('is_bound_robot',true)->where('is_bound_robot_subscribe',true)->pluck('user_id');
+        $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
         Notification::query()
             ->where('is_push', false)
             ->whereIn('user_id', $ids)
@@ -131,10 +132,8 @@ class RobotPushUserService extends BaseService
         try {
             $count=0;
             //获取订阅的用户
-            $ids=UserData::query()->where('is_bound_robot',true)->where('is_bound_robot_subscribe',true)->pluck('user_id');
-            User::query()
-                ->where('status', 1)
-                ->whereIn('id', $ids)
+            UserRobotSubscribe::query()
+                ->where('is_bound_robot_subscribe', true)
                 ->chunk(1000, function ($list) use (&$count,$counts_second,$footBallFixturePush) {
                     foreach ($list as $item) {
                         $referral_code=$item->referral_code;
@@ -222,7 +221,7 @@ class RobotPushUserService extends BaseService
             $footBallFixturePush->is_push_user=true;
             $footBallFixturePush->push_user_time=Carbon::now();
             $footBallFixturePush->save();
-            Log::info("推送赛事给用户：" . count($ids)." 成功：$count");
+            Log::info("推送赛事给用户：".$count);
             return true;
         } catch (\Exception $exception) {
             Log::error("机器自动推送错误：" . $exception->getMessage());
