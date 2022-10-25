@@ -53,7 +53,7 @@ class RobotPushService extends BaseService
             $id=Carbon::now()->format('YmdH');
             if ($this->is_Debug) {
                 $url=$this->getUrl."type=$type&id=$id&lang=$lang&odds=0&date=";
-                Log::info("获取24小时赛事图片处理:".$url);
+                //Log::info("获取24小时赛事图片处理:".$url);
                 $this->httpWorkerman->get($url);
 
             }
@@ -111,9 +111,9 @@ class RobotPushService extends BaseService
                     $footBallFixturePush=FootBallFixturePush::query()->where('type',$type)->where('lang',$lang)->where('id',$footBallFixture->id)->first();
                     if(!$footBallFixturePush){
                         $url=$this->getUrl."type=$type&id=$footBallFixture->id&lang=$lang&odds=$odds&date=$footBallFixture->date";
-                        Log::info("获取2小时赛事图片处理:".$url);
+                        //Log::info("获取2小时赛事图片处理:".$url);
                         if ($this->is_Debug) {
-                            Log::info("获取2小时赛事图片处理-请求:".$url);
+                            //Log::info("获取2小时赛事图片处理-请求:".$url);
                             $this->httpWorkerman->get($url);
                         }
                         $count++;
