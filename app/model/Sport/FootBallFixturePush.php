@@ -27,6 +27,7 @@ class FootBallFixturePush extends Model
     protected $dates = [
         'date',
         'push_time',
+        'push_user_time'
     ];
 
     protected $casts = [
