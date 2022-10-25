@@ -95,7 +95,7 @@ class RobotPushService extends BaseService
             $teacherFixture = collect($footBallFixture->teacherFixture)->filter(function (FootballTeacherFixture $teacherFixture) {
                 return $teacherFixture->teacher?->is_rec;
             })->first();
-            $odds=(float)ToDecimal2($teacherFixture?->odds * 100);
+            $odds=(float)$this->toDecimal2($teacherFixture?->odds * 100);
             $type=1;
             if($odds>2.5){
                 $type=2;
@@ -125,7 +125,12 @@ class RobotPushService extends BaseService
     }
 
 
+    public function toDecimal2($v): string
+    {
+        $v = (floor((int)($v * 100)) / 100);
 
+        return sprintf("%01.2f", $v);
+    }
     /**
      * 推送赛事图片
      */
