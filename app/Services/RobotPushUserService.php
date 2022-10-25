@@ -20,8 +20,6 @@ use Workerman\Worker;
 class RobotPushUserService extends BaseService
 {
 
-    protected string $getUrl='https://snap.yfb.net/snapshot?';
-
     protected string $pushUrl='http://192.168.6.209/api/v1/send';
     protected string $pushUserUrl='http://192.168.6.209/api/v1/sendUser';
     protected $httpWorkerman;
@@ -50,7 +48,7 @@ class RobotPushUserService extends BaseService
         $count = 0;
         $ids=UserData::query()->where('is_bound_robot',true)->where('is_bound_robot_subscribe',true)->pluck('user_id');
         Notification::query()
-            ->where('is_push', true)
+            ->where('is_push', false)
             ->whereIn('user_id', $ids)
             ->with(['user', 'user.userData'])
             ->whereBetween('created_at', [Carbon::today(), Carbon::today()->endOfDay()])
@@ -81,7 +79,7 @@ class RobotPushUserService extends BaseService
             }
         }
 
-        $notification->is_push=false;
+        $notification->is_push=true;
         $notification->is_push_success=true;
         $notification->push_at=Carbon::now();
         $notification->save();
@@ -121,6 +119,7 @@ class RobotPushUserService extends BaseService
         FootBallFixturePush::query()
             ->where('status', true)
             ->where('is_push', true)
+            ->where('is_push_user', false)
             ->where('push_time', '>', Carbon::now()->subMinutes(5))//5分钟内推送过的赛事
             ->chunk(50, function ($list) use (&$count) {
                 foreach ($list as $item) {
@@ -133,7 +132,7 @@ class RobotPushUserService extends BaseService
         try {
             $count=0;
             //获取订阅的用户
-            $ids=UserData::query()->where('is_bound_robot',true)->pluck('user_id');//->where('is_bound_robot_subscribe',true)
+            $ids=UserData::query()->where('is_bound_robot',true)->where('is_bound_robot_subscribe',true)->pluck('user_id');
             User::query()
                 ->where('status', 1)
                 ->whereIn('id', $ids)
