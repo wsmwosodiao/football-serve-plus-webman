@@ -74,7 +74,7 @@ class RobotPushService extends BaseService
             ->where('date', '<', Carbon::now()->addMinutes(130))
             ->where('date', '>', Carbon::now()->subMinutes(130))
             ->where('status', '<>', false)
-            ->chunk(10, function ($list) use (&$count) {
+            ->chunk(15, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
                     $this->getTodayMacthTwoHours($item);
@@ -145,7 +145,7 @@ class RobotPushService extends BaseService
             ->where('status', false)
             ->where('is_push', true)
             ->where('date', '>', Carbon::now())
-            ->chunk(1, function ($list) use (&$count) {
+            ->chunk(15, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
                     $this->upPushMacth($item,$count);
@@ -252,7 +252,7 @@ class RobotPushService extends BaseService
             ->where('is_push', true)
             ->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
-            ->chunk(10, function ($list) use (&$count) {
+            ->chunk(20, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
                     $this->upPushMacthTiming($item);
