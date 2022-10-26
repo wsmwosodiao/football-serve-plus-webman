@@ -291,7 +291,12 @@ class RobotPushService extends BaseService
     public function pushMacthTimingSendRed(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
     {
         try {
-            $redPacket=RedPacket::query()->where('command',$footBallFixturePushAll->red_command)->first();
+
+            $set_red_command=$footBallFixturePushAll->red_command;
+            if($footBallFixturePushAll->push_count%2===0 && $footBallFixturePushAll->red_command1){
+                $set_red_command=$footBallFixturePushAll->red_command1;
+            }
+            $redPacket= RedPacket::query()->where('command',$set_red_command)->first();
             if(!$redPacket) return false;
 
             $newRedPacket = $redPacket->replicate();
