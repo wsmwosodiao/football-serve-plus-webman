@@ -161,9 +161,10 @@ class RobotPushUserService extends BaseService
     {
         $userRobotSubscribe=UserRobotSubscribe::query()->find($userRobotSubscribe_id);
         $footBallFixturePush=FootBallFixturePush::query()->find($footBallFixturePush_id);
+        $referral_code=$userRobotSubscribe->referral_code;
         if($userRobotSubscribe && $footBallFixturePush){
             $sleep_second=1;
-            $referral_code=$userRobotSubscribe->referral_code;
+
             $images=$footBallFixturePush->images;
             if($footBallFixturePush->contents){
                 $contents=$footBallFixturePush->contents;
