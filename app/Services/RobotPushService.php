@@ -169,10 +169,10 @@ class RobotPushService extends BaseService
                 $images=$footBallFixturePush->images;
                 if($footBallFixturePush->contents){
                     $contents=$footBallFixturePush->contents;
-                    $contents=str_replace("-","\-",$contents);
-                    $contents=str_replace("——","\——",$contents);
-                    $contents=str_replace(".","\.",$contents);
-                    $contents=str_replace("+","\+",$contents);
+//                    $contents=str_replace("-","\-",$contents);
+//                    $contents=str_replace("——","\——",$contents);
+//                    $contents=str_replace(".","\.",$contents);
+//                    $contents=str_replace("+","\+",$contents);
                     $params=[
                         "level"=>$level,
                         "language"=>$footBallFixturePush->lang,
@@ -211,10 +211,10 @@ class RobotPushService extends BaseService
                 }
                 if($footBallFixturePush->contents_introduction){
                     $contents=$footBallFixturePush->contents_introduction;
-                    $contents=str_replace("-","\-",$contents);
-                    $contents=str_replace("——","\——",$contents);
-                    $contents=str_replace(".","\.",$contents);
-                    $contents=str_replace("+","\+",$contents);
+//                    $contents=str_replace("-","\-",$contents);
+//                    $contents=str_replace("——","\——",$contents);
+//                    $contents=str_replace(".","\.",$contents);
+//                    $contents=str_replace("+","\+",$contents);
                     $params=[
                         "level"=>$level,
                         "language"=>$footBallFixturePush->lang,
@@ -317,10 +317,10 @@ class RobotPushService extends BaseService
                         $contents=data_get($vinfo, "contents","");
 
                         if($contents){
-                            $contents=str_replace("-","\-",$contents);
-                            $contents=str_replace("——","\——",$contents);
-                            $contents=str_replace(".","\.",$contents);
-                            $contents=str_replace("+","\+",$contents);
+//                            $contents=str_replace("-","\-",$contents);
+//                            $contents=str_replace("——","\——",$contents);
+//                            $contents=str_replace(".","\.",$contents);
+//                            $contents=str_replace("+","\+",$contents);
                             $contents=str_replace("{red}",$red_command,$contents);
                             $contents=str_replace("{red_url}",$red_url,$contents);
 
@@ -398,10 +398,10 @@ class RobotPushService extends BaseService
                         $contents=data_get($vinfo, "contents","");
 
                         if($contents){
-                            $contents=str_replace("-","\-",$contents);
-                            $contents=str_replace("——","\——",$contents);
-                            $contents=str_replace(".","\.",$contents);
-                            $contents=str_replace("+","\+",$contents);
+//                            $contents=str_replace("-","\-",$contents);
+//                            $contents=str_replace("——","\——",$contents);
+//                            $contents=str_replace(".","\.",$contents);
+//                            $contents=str_replace("+","\+",$contents);
 
                             $params=[
                                 "level"=>$footBallFixturePushAll->type,
