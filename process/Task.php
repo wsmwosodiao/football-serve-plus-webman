@@ -52,10 +52,10 @@ class Task
 
 
         // 每1分钟的1秒分钟执行一次【用户站内信】
-//        new Crontab('1 */2 * * * *', function(){
-//            RobotPushUserService::make()->pushMacthNotification();
-//            echo "机器人用户站内信推送：".date('Y-m-d H:i:s')."\n";
-//        });
+        new Crontab('1 */2 * * * *', function(){
+            RobotPushUserService::make()->pushMacthNotification();
+            echo "机器人用户站内信推送：".date('Y-m-d H:i:s')."\n";
+        });
 
 //        // 每3分钟的40秒分钟执行一次【用户赛事信息】
 //        new Crontab('30 */2 * * * *', function(){
