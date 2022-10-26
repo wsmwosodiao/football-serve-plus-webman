@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App;
 
+use App\jobs\RobotNotification;
 use App\model\LanguageConfig;
 use App\model\Notification;
 use App\model\Sport\FootBallFixturePush;
@@ -52,12 +53,16 @@ class RobotPushUserService extends BaseService
             ->whereIn('user_id', $ids)
             ->with(['user', 'user.userData'])
             ->whereBetween('created_at', [Carbon::today(), Carbon::today()->endOfDay()])
-            ->chunk(1000, function ($list) use (&$count) {
+            ->chunk(5000, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
-                    $this->pushMacthNotificationSend($item);
+                    \Webman\RedisQueue\Client::send("send-message", $item);
                 }
             });
+//             ->lazyById()->each(function (Notification $notification) use (&$count) {
+//                \Webman\RedisQueue\Client::send("send-message", $notification);
+//                $count++;
+//            });
         Log::info("推送用户站内通知：".$count);
     }
     public function pushMacthNotificationSend(Notification $notification)
@@ -134,7 +139,7 @@ class RobotPushUserService extends BaseService
             //获取订阅的用户
             UserRobotSubscribe::query()
                 ->where('is_bound_robot_subscribe', true)
-                ->chunk(1000, function ($list) use (&$count,$counts_second,$footBallFixturePush) {
+                ->chunk(5000, function ($list) use (&$count,$counts_second,$footBallFixturePush) {
                     foreach ($list as $item) {
                         $referral_code=$item->referral_code;
                         if($item->local == $footBallFixturePush->lang){

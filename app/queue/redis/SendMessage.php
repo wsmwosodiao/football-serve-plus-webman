@@ -2,6 +2,7 @@
 
 namespace App\queue\redis;
 
+use App\Services\RobotPushUserService;
 use Webman\RedisQueue\Consumer;
 
 class SendMessage implements Consumer
@@ -10,6 +11,6 @@ class SendMessage implements Consumer
 
     public function consume($data)
     {
-        var_export($data);
+        RobotPushUserService::make()->pushMacthNotificationSend($data);
     }
 }
