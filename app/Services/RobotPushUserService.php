@@ -56,7 +56,7 @@ class RobotPushUserService extends BaseService
             ->chunk(5000, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
-                    \Webman\RedisQueue\Client::send("send-message", $item);
+                    \Webman\RedisQueue\Client::send("send-notification", $item->getKey());
                 }
             });
 //             ->lazyById()->each(function (Notification $notification) use (&$count) {
@@ -65,9 +65,9 @@ class RobotPushUserService extends BaseService
 //            });
         Log::info("推送用户站内通知：".$count);
     }
-    public function pushMacthNotificationSend(Notification $notification)
+    public function pushMacthNotificationSend($notification_id)
     {
-
+        $notification=Notification::query()->get()->first($notification_id);
         $local=$notification->user->local;
         $content=$this->getContent($notification,$local);
         if($content){
@@ -132,95 +132,17 @@ class RobotPushUserService extends BaseService
                 }
             });
     }
-    public function pushMacthUserPicture(FootBallFixturePush $footBallFixturePush, $counts_second=1): bool
+    public function pushMacthUserPicture(FootBallFixturePush $footBallFixturePush, $counts_second=1)
     {
         try {
             $count=0;
             //获取订阅的用户
             UserRobotSubscribe::query()
+                ->where('local',$footBallFixturePush->lang)
                 ->where('is_bound_robot_subscribe', true)
                 ->chunk(5000, function ($list) use (&$count,$counts_second,$footBallFixturePush) {
                     foreach ($list as $item) {
-                        $referral_code=$item->referral_code;
-                        if($item->local == $footBallFixturePush->lang){
-                            $is_send=true;
-                            $sleep_second=3 * $counts_second;
-                            if($is_send){
-                                $images=$footBallFixturePush->images;
-                                if($footBallFixturePush->contents){
-                                    $contents=$footBallFixturePush->contents;
-                                    $contents=str_replace("-","\-",$contents);
-                                    $contents=str_replace("——","\——",$contents);
-                                    $contents=str_replace(".","\.",$contents);
-                                    $contents=str_replace("+","\+",$contents);
-                                    $params=[
-                                        "level"=>0,
-                                        "language"=>$footBallFixturePush->lang,
-                                        "text"=>$contents,
-                                        "delay"=>0,
-                                        "referral_code"=>$referral_code
-                                    ];
-                                    if($footBallFixturePush->country){
-                                        $params['country']=$footBallFixturePush->country;
-                                    }
-                                    $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                                    Log::info("推送赛事给用户-标题",["params"=>$params,"referral_code"=>$referral_code]);
-                                    if($this->is_push){
-                                        $this->httpWorkerman->post($this->pushUserUrl, $params);
-                                    }
-                                }
-                                if($images){
-                                    $i=1;
-                                    foreach ($images as $key=>$v){
-                                        if($v){
-                                            $delay=$i*$sleep_second - 2;
-                                            $params=[
-                                                "level"=>0,
-                                                "language"=>$footBallFixturePush->lang,
-                                                "img_url"=>$v,
-                                                "delay"=>$delay,
-                                                "referral_code"=>$referral_code
-                                            ];
-                                            if($footBallFixturePush->country){
-                                                $params['country']=$footBallFixturePush->country;
-                                            }
-                                            $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                                            //Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code,'url'=>$this->pushUserUrl,"is_Debug"=>$this->is_Debug]);
-                                            if($this->is_push){
-                                                $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
-                                                //Log::info("推送赛事给用户-图片-返回",["res"=>$res,"referral_code"=>$referral_code]);
-                                            }
-                                            $i++;
-                                        }
-                                    }
-                                }
-                                if($footBallFixturePush->contents_introduction){
-                                    $contents=$footBallFixturePush->contents_introduction;
-                                    $contents=str_replace("-","\-",$contents);
-                                    $contents=str_replace("——","\——",$contents);
-                                    $contents=str_replace(".","\.",$contents);
-                                    $contents=str_replace("+","\+",$contents);
-                                    $params=[
-                                        "level"=>0,
-                                        "language"=>$footBallFixturePush->lang,
-                                        "text"=>$contents,
-                                        "delay"=>$sleep_second + 5,
-                                        "referral_code"=>$referral_code
-                                    ];
-                                    if($footBallFixturePush->country){
-                                        $params['country']=$footBallFixturePush->country;
-                                    }
-                                    $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                                    Log::info("推送赛事给用户-简介",["params"=>$params,"referral_code"=>$referral_code]);
-                                    if($this->is_push){
-                                        $this->httpWorkerman->post($this->pushUserUrl, $params);
-                                    }
-                                }
-
-                            }
-                            $count++;
-                        }
-
+                        \Webman\RedisQueue\Client::send("send-macth", ["userRobotSubscribe_id"=>$item->getKey(),"footBallFixturePush_id"=>$footBallFixturePush->getKey()]);
                     }
                 });
             //更新数据
@@ -235,6 +157,86 @@ class RobotPushUserService extends BaseService
         }
     }
 
+    public function pushMacthUserPictureSend($userRobotSubscribe_id, $footBallFixturePush_id)
+    {
+        $userRobotSubscribe=UserRobotSubscribe::query()->find($userRobotSubscribe_id);
+        $footBallFixturePush=FootBallFixturePush::query()->find($footBallFixturePush_id);
+        if($userRobotSubscribe && $footBallFixturePush){
+            $sleep_second=1;
+            $referral_code=$userRobotSubscribe->referral_code;
+            $images=$footBallFixturePush->images;
+            if($footBallFixturePush->contents){
+                $contents=$footBallFixturePush->contents;
+                $contents=str_replace("-","\-",$contents);
+                $contents=str_replace("——","\——",$contents);
+                $contents=str_replace(".","\.",$contents);
+                $contents=str_replace("+","\+",$contents);
+                $params=[
+                    "level"=>0,
+                    "language"=>$footBallFixturePush->lang,
+                    "text"=>$contents,
+                    "delay"=>0,
+                    "referral_code"=>$referral_code
+                ];
+                if($footBallFixturePush->country){
+                    $params['country']=$footBallFixturePush->country;
+                }
+                $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+                Log::info("推送赛事给用户-标题",["params"=>$params,"referral_code"=>$referral_code]);
+                if($this->is_push){
+                    $this->httpWorkerman->post($this->pushUserUrl, $params);
+                }
+            }
+            if($images){
+                $i=1;
+                foreach ($images as $key=>$v){
+                    if($v){
+                        $delay=$i*$sleep_second - 2;
+                        $params=[
+                            "level"=>0,
+                            "language"=>$footBallFixturePush->lang,
+                            "img_url"=>$v,
+                            "delay"=>$delay,
+                            "referral_code"=>$referral_code
+                        ];
+                        if($footBallFixturePush->country){
+                            $params['country']=$footBallFixturePush->country;
+                        }
+                        $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+                        Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code,'url'=>$this->pushUserUrl,"is_Debug"=>$this->is_Debug]);
+                        if($this->is_push){
+                            $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
+                            Log::info("推送赛事给用户-图片-返回",["res"=>$res,"referral_code"=>$referral_code]);
+                        }
+                        $i++;
+                    }
+                }
+            }
+            if($footBallFixturePush->contents_introduction){
+                $contents=$footBallFixturePush->contents_introduction;
+                $contents=str_replace("-","\-",$contents);
+                $contents=str_replace("——","\——",$contents);
+                $contents=str_replace(".","\.",$contents);
+                $contents=str_replace("+","\+",$contents);
+                $params=[
+                    "level"=>0,
+                    "language"=>$footBallFixturePush->lang,
+                    "text"=>$contents,
+                    "delay"=>$sleep_second + 5,
+                    "referral_code"=>$referral_code
+                ];
+                if($footBallFixturePush->country){
+                    $params['country']=$footBallFixturePush->country;
+                }
+                $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+                Log::info("推送赛事给用户-简介",["params"=>$params,"referral_code"=>$referral_code]);
+                if($this->is_push){
+                    $this->httpWorkerman->post($this->pushUserUrl, $params);
+                }
+            }
+        }
+        Log::info("推送赛事给用户--数据不存在",["userRobotSubscribe_id"=>$userRobotSubscribe_id,"referral_code"=>$referral_code]);
+    }
 
 
 
