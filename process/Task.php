@@ -15,7 +15,7 @@ class Task
     public function onWorkerStart()
     {
         // 每1小时第2分执行【获取24小时赛事图片】
-        new Crontab('*/180 * * * *', function(){
+        new Crontab('20 */180 * * * *', function(){
             RobotPushService::make()->getTodayMacth();
             echo "获取24小时赛事图片：".date('Y-m-d H:i:s')."\n";
         });
