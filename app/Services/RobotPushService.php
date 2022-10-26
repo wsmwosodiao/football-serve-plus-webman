@@ -300,8 +300,7 @@ class RobotPushService extends BaseService
             if ($newRedPacket->slug) $newRedPacket->slug = strtoupper(Str::random(6));
 
             if ($newRedPacket->start_at) $newRedPacket->start_at =Carbon::now();
-            if ($newRedPacket->end_at) $newRedPacket->end_at = Carbon::now()->addHours(48);
-            if ($newRedPacket->valid_hour) $newRedPacket->valid_hour = 48;
+            if ($newRedPacket->end_at) $newRedPacket->end_at = Carbon::now()->addHours($newRedPacket->valid_hour);
             $newRedPacket->save();
 
             $red_command=$newRedPacket->command;
