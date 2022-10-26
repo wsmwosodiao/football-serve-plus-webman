@@ -16,6 +16,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property boolean $status //是否推送成功
  * @property boolean $is_push //是否可以推送
  * @property boolean $is_push_user //是否是用户类型
+ * @property boolean $is_top //是否置顶
  */
 class FootBallFixturePushAll extends Model
 {
@@ -40,6 +41,7 @@ class FootBallFixturePushAll extends Model
         'status' => 'boolean',
         'is_push' => 'boolean',
         'is_push_user' => 'boolean',
+        'is_top'=> 'boolean',
     ];
 
     public const PUSHTYPE = [

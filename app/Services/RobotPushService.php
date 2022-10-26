@@ -5,6 +5,7 @@ namespace App\Services;
 use App;
 
 use App\model\Language;
+use App\model\RedPacket;
 use App\model\Sport\FootBallFixture;
 use App\model\Sport\FootBallFixturePush;
 use App\model\Sport\FootBallFixturePushAll;
@@ -277,7 +278,110 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->push_time){
             if(Carbon::make($footBallFixturePushAll->push_time)->addMinutes($footBallFixturePushAll->hours)->gt(Carbon::now())) return false;
         }
-        return $this->pushMacthTimingSend($footBallFixturePushAll);
+
+        if($footBallFixturePushAll->red_command){
+            return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
+        }else{
+            return $this->pushMacthTimingSend($footBallFixturePushAll);
+        }
+
+
+    }
+
+    public function pushMacthTimingSendRed(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
+    {
+        try {
+            $redPacket=RedPacket::query()->where('command',$footBallFixturePushAll->red_command)->first();
+            if(!$redPacket) return false;
+
+            $newRedPacket = $redPacket->replicate();
+            if ($newRedPacket->name) $newRedPacket->name .= "-机器人复制";
+            if ($newRedPacket->status) $newRedPacket->status = true;
+            if ($newRedPacket->slug) $newRedPacket->slug = strtoupper(Str::random(6));
+
+            if ($newRedPacket->start_at) $newRedPacket->start_at =Carbon::now();
+            if ($newRedPacket->end_at) $newRedPacket->end_at = Carbon::now()->addHours(48);
+            if ($newRedPacket->valid_hour) $newRedPacket->valid_hour = 48;
+            $newRedPacket->save();
+
+            $red_command=$newRedPacket->command;
+            $red_url="";
+            $langList = Language::query()->pluck('id','slug')->toArray();
+            foreach ($langList as $key=>$value){
+                $text=data_get($footBallFixturePushAll, "config_".$key,"");
+                if($text){
+                    $count=1;
+                    foreach ($text as $vinfo){
+                        $count++;
+                        $delay=$footBallFixturePushAll->sleep_second * $count;
+                        $contents=data_get($vinfo, "contents","");
+
+                        if($contents){
+                            $contents=str_replace("-","\-",$contents);
+                            $contents=str_replace("——","\——",$contents);
+                            $contents=str_replace(".","\.",$contents);
+                            $contents=str_replace("+","\+",$contents);
+                            $contents=str_replace("{red}",$red_command,$contents);
+                            $contents=str_replace("{red_url}",$red_url,$contents);
+
+                            $params=[
+                                "level"=>$footBallFixturePushAll->type,
+                                "language"=>(string)$key,
+                                "text"=>$contents,
+                                "delay"=>$delay,
+                            ];
+                            if($footBallFixturePushAll->country){
+                                $params['country']=$footBallFixturePushAll->country;
+                            }
+                            if($footBallFixturePushAll->bot_name){
+                                $params['bot_name']=$footBallFixturePushAll->bot_name;
+                            }
+                            if($footBallFixturePushAll->is_top){
+                                $params['is_top']=$footBallFixturePushAll->is_top;
+                            }
+
+                            if($this->is_push){
+                                $this->httpWorkerman->post($this->pushUrl, $params);
+                            }
+                        }
+                        $img=data_get($vinfo, "icon","");
+                        if($img){
+                            $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
+                            $params=[
+                                "level"=>$footBallFixturePushAll->type,
+                                "delay"=>$delay-3,
+                                "language"=>(string)$key,
+                                "img_url"=>$img,
+                            ];
+                            if($footBallFixturePushAll->country){
+                                $params['country']=$footBallFixturePushAll->country;
+                            }
+                            if($footBallFixturePushAll->bot_name){
+                                $params['bot_name']=$footBallFixturePushAll->bot_name;
+                            }
+                            if($footBallFixturePushAll->is_top){
+                                $params['is_top']=$footBallFixturePushAll->is_top;
+                            }
+
+                            if($this->is_push){
+                                $this->httpWorkerman->post($this->pushUrl, $params);
+                            }
+                        }
+                    }
+                }
+            }
+            //更新数据
+            if($is_myself==0){
+                $footBallFixturePushAll->push_time=Carbon::now();
+                $footBallFixturePushAll->status=true;
+                $footBallFixturePushAll->push_count=$footBallFixturePushAll->push_count+1;
+                $footBallFixturePushAll->save();
+            }
+            return true;
+        } catch (\Exception $exception) {
+            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            return false;
+        }
     }
 
     public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
@@ -311,6 +415,10 @@ class RobotPushService extends BaseService
                             if($footBallFixturePushAll->bot_name){
                                 $params['bot_name']=$footBallFixturePushAll->bot_name;
                             }
+                            if($footBallFixturePushAll->is_top){
+                                $params['is_top']=$footBallFixturePushAll->is_top;
+                            }
+
 
                             if($this->is_push){
                                 $this->httpWorkerman->post($this->pushUrl, $params);
@@ -330,6 +438,9 @@ class RobotPushService extends BaseService
                             }
                             if($footBallFixturePushAll->bot_name){
                                 $params['bot_name']=$footBallFixturePushAll->bot_name;
+                            }
+                            if($footBallFixturePushAll->is_top){
+                                $params['is_top']=$footBallFixturePushAll->is_top;
                             }
 
                             if($this->is_push){
