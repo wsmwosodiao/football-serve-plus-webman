@@ -402,9 +402,9 @@ class RobotPushService extends BaseService
             ->where('order_status', 0)
             ->whereIn('user_id', $ids)
             ->whereNotIn('order_sn', $order_sns)
-            ->where('created_at', ">" ,Carbon::now()->subMinutes(15))
+            ->where('created_at', ">" ,Carbon::now()->subMinutes(20))
             ->with(['user'])->lazyById(10)->each(function ($item) use (&$count,$footBallFixturePushAll) {
-                    if(Carbon::make($item->created_at)->addMinutes(3)->lt(Carbon::now())){
+                    if(Carbon::make($item->created_at)->addMinutes(10)->lt(Carbon::now())){
                         $count ++;
                         $key=$item->user->local;
                         $text=data_get($footBallFixturePushAll, "config_".$key,"");
