@@ -384,6 +384,8 @@ class RobotPushService extends BaseService
     public function pushMacthTimingSendNoRecharge(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
     {
         try {
+            $count=0;
+            Log::error("推送用户类型：".$footBallFixturePushAll->slug);
             //获取最近未支付成功订单
             $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
             //排出处理过的数据
@@ -415,7 +417,7 @@ class RobotPushService extends BaseService
                             ]);
                     }
                 });
-
+            Log::error("推送用户类型：".$footBallFixturePushAll->slug." 执行订单：".$count);
             //更新数据
             if($is_myself==0){
                 $footBallFixturePushAll->push_time=Carbon::now();
