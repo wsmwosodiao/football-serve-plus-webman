@@ -295,21 +295,19 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->end_at){//已结束
             if(Carbon::make($footBallFixturePushAll->end_at)->lt(Carbon::now())) return false;
         }
+        if($footBallFixturePushAll->red_command){
+            return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
+        }
         //推送时间间隔为0
         if($footBallFixturePushAll->hours == 0) return false;
-
         //处理是否到达可推送时间
         if($footBallFixturePushAll->push_time){
             if(Carbon::make($footBallFixturePushAll->push_time)->addMinutes($footBallFixturePushAll->hours)->gt(Carbon::now())) return false;
         }
-
         if($footBallFixturePushAll->red_command){
-            return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
         }else{
             return $this->pushMacthTimingSend($footBallFixturePushAll);
         }
-
-
     }
 
     public function pushMacthTimingSendRed(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
