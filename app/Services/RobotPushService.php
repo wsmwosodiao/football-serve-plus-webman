@@ -398,12 +398,12 @@ class RobotPushService extends BaseService
             //排出处理过的数据
             $order_sns=RobotPushLog::query()->where('type',$footBallFixturePushAll->slug)->pluck('id');
             UserRechargeOrder::query()
-                ->where('is_pay', 0)
-                ->where('order_status', 0)
-                ->whereIn('user_id', $ids)
-                //->whereNotIn('order_sn', $order_sns)
-                //->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
-                ->with(['user'])->lazyById(1, function ($list) use (&$count,$footBallFixturePushAll) {
+            ->where('is_pay', 0)
+            ->where('order_status', 0)
+            ->whereIn('user_id', $ids)
+            ->whereNotIn('order_sn', $order_sns)
+            ->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
+            ->with(['user'])->chunk(50, function ($list) use (&$count,$footBallFixturePushAll) {
                     $count = $count + count($list);
                     foreach ($list as $item) {
                         $key=$item->user->local;
