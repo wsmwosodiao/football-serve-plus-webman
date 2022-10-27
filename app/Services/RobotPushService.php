@@ -255,8 +255,8 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where('slug',null)->orWhere('slug','NORECHARGE')
-            ->where('is_push_user', false)
+            ->where('slug',NULL)->orWhere('slug','NORECHARGE')
+            //->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(20, function ($list) use (&$count) {
                 $count = $count + count($list);
@@ -269,6 +269,8 @@ class RobotPushService extends BaseService
         }
 
     }
+
+
 
     /**
      * 推送自定义推送内容-红包
@@ -306,8 +308,10 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->push_time){
             if(Carbon::make($footBallFixturePushAll->push_time)->addMinutes($footBallFixturePushAll->hours)->gt(Carbon::now())) return false;
         }
-        if($footBallFixturePushAll->slug=='NORECHARGE'){
-            return $this->pushMacthTimingSendNoRecharge($footBallFixturePushAll);
+        if($footBallFixturePushAll->is_push_user){
+            if($footBallFixturePushAll->slug=='NORECHARGE'){//未充值订单
+                return $this->pushMacthTimingSendNoRecharge($footBallFixturePushAll);
+            }
         }else{
             return $this->pushMacthTimingSend($footBallFixturePushAll);
         }
