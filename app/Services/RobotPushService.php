@@ -402,7 +402,7 @@ class RobotPushService extends BaseService
             ->where('order_status', 0)
             ->whereIn('user_id', $ids)
             ->whereNotIn('order_sn', $order_sns)
-            ->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
+            //->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
             ->with(['user'])->lazyById(50)->each(function ($item) use (&$count,$footBallFixturePushAll) {
                     $count = $count ++;
                     $key=$item->user->local;
