@@ -28,7 +28,7 @@ class RobotPushService extends BaseService
 {
 
     protected string $getUrl='https://snap.yfb.net/snapshot?';
-
+    protected string $pushUserUrl='https://api.jooegg.net/api/v1/sendUser';
     protected string $pushUrl='https://api.jooegg.net/api/v1/send';//'http://192.168.6.209/api/v1/send';
     protected $httpWorkerman;
     protected bool $is_push=true; //是否正式推送
@@ -471,7 +471,11 @@ class RobotPushService extends BaseService
                 }
 
                 if($this->is_push){
-                    $this->httpWorkerman->post($this->pushUrl, $params);
+                    if($referral_code){
+                        $this->httpWorkerman->post($this->pushUserUrl, $params);
+                    }else{
+                        $this->httpWorkerman->post($this->pushUrl, $params);
+                    }
                 }
             }
             $img=data_get($vinfo, "icon","");
@@ -497,7 +501,12 @@ class RobotPushService extends BaseService
                 }
 
                 if($this->is_push){
-                    $this->httpWorkerman->post($this->pushUrl, $params);
+                    if($referral_code){
+                        $this->httpWorkerman->post($this->pushUserUrl, $params);
+                    }else{
+                        $this->httpWorkerman->post($this->pushUrl, $params);
+                    }
+
                 }
             }
         }
