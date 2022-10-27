@@ -30,14 +30,14 @@ class Task
         // 每3分钟的10秒分钟执行一次【赛事图片推送】
         new Crontab('10 */2 * * * *', function(){
             RobotPushService::make()->pushMacth();
-            //echo "机器人赛事图片推送：".date('Y-m-d H:i:s')."\n";
+            echo "机器人赛事图片推送：".date('Y-m-d H:i:s')."\n";
         });
 
 
         // 每2分钟的20秒分钟执行一次【机器人自定义推送】
         new Crontab('20 */2 * * * *', function(){
             RobotPushService::make()->pushMacthTiming();
-            //echo "机器人自定义推送：".date('Y-m-d H:i:s')."\n";
+            echo "机器人自定义推送：".date('Y-m-d H:i:s')."\n";
         });
 
         //每整点半小时红包

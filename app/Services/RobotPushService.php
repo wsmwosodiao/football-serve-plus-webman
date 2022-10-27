@@ -275,7 +275,6 @@ class RobotPushService extends BaseService
         FootBallFixturePushAll::query()
             ->where('is_push', true)
             ->where('sulg','RED')
-            ->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(1, function ($list) use (&$count) {
                 $count = $count + count($list);
@@ -283,9 +282,7 @@ class RobotPushService extends BaseService
                     $this->upPushMacthTiming($item);
                 }
             });
-        if($count>0){
-            Log::info("自定义推送任务：".$count);
-        }
+        Log::info("红包自定义推送任务：".$count);
 
     }
 
@@ -295,7 +292,7 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->end_at){//已结束
             if(Carbon::make($footBallFixturePushAll->end_at)->lt(Carbon::now())) return false;
         }
-        if($footBallFixturePushAll->red_command){
+        if($footBallFixturePushAll->slug=='RED'){
             return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
         }
         //推送时间间隔为0
