@@ -408,7 +408,7 @@ class RobotPushService extends BaseService
                     $key=$item->user->local;
                     $text=data_get($footBallFixturePushAll, "config_".$key,"");
                     if($text){
-                        $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn);
+                        $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn,$item->user->referral_code);
                     }
                     //插入执行过的订单
                     RobotPushLog::query()
@@ -439,7 +439,7 @@ class RobotPushService extends BaseService
 
 
 
-    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="")
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="")
     {
         $count=1;
         foreach ($content as $vinfo){
@@ -465,6 +465,10 @@ class RobotPushService extends BaseService
                 if($footBallFixturePushAll->is_top){
                     $params['is_top']=$footBallFixturePushAll->is_top;
                 }
+                if($referral_code){
+                    $params['referral_code']=$referral_code;
+                }
+
                 if($this->is_push){
                     $this->httpWorkerman->post($this->pushUrl, $params);
                 }
@@ -486,6 +490,9 @@ class RobotPushService extends BaseService
                 }
                 if($footBallFixturePushAll->is_top){
                     $params['is_top']=$footBallFixturePushAll->is_top;
+                }
+                if($referral_code){
+                    $params['referral_code']=$referral_code;
                 }
 
                 if($this->is_push){
