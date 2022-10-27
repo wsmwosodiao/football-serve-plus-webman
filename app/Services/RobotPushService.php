@@ -392,16 +392,17 @@ class RobotPushService extends BaseService
     {
         try {
             $count=0;
-            Log::error("推送用户类型：".$footBallFixturePushAll->slug);
+
             //获取最近未支付成功订单
             $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
             //排出处理过的数据
-            $getids=RobotPushLog::query()->where('type',$footBallFixturePushAll->slug)->pluck('id');
+            $order_sns=RobotPushLog::query()->where('type',$footBallFixturePushAll->slug)->pluck('id');
+            Log::info("推送用户类型：".$footBallFixturePushAll->slug,["订阅ID"=>$ids,"处理记录ID"=>$order_sns]);
             UserRechargeOrder::query()
                 ->where('is_pay', 0)
                 ->where('order_status', 0)
                 ->whereIn('user_id', $ids)
-                ->whereIn('id', $getids)
+                ->whereNotIn('order_sn', $order_sns)
                 ->where('created_at', '<', Carbon::now()->subMinutes($footBallFixturePushAll->hours))
                 ->where('created_at', '>', Carbon::now()->subMinutes(120))
                 ->with(['user'])->lazyById(1, function ($list) use (&$count,$footBallFixturePushAll) {
