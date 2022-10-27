@@ -251,7 +251,7 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->whereNull('sulg')
+            ->whereNull('slug')
             ->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(20, function ($list) use (&$count) {
@@ -274,26 +274,26 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where('sulg','RED')
+            ->where('slug','RED')
             ->where('date', '<', Carbon::now())//开始时间
             ->where('is_push_user', false)
             ->chunk(1, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
-                    $this->upPushMacthTiming($item);
+                    $this->upPushMacthTiming($item,1);
                 }
             });
         Log::info("红包自定义推送任务：".$count);
 
     }
 
-    public function upPushMacthTiming(FootBallFixturePushAll $footBallFixturePushAll)
+    public function upPushMacthTiming(FootBallFixturePushAll $footBallFixturePushAll , $type=0)
     {
 
         if($footBallFixturePushAll->end_at){//已结束
             if(Carbon::make($footBallFixturePushAll->end_at)->lt(Carbon::now())) return false;
         }
-        if($footBallFixturePushAll->slug=='RED'){
+        if($footBallFixturePushAll->slug=='RED' && $type==1){
             return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
         }
         //推送时间间隔为0
