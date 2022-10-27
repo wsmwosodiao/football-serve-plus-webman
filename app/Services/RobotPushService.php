@@ -408,6 +408,7 @@ class RobotPushService extends BaseService
                     $key=$item->user->local;
                     $text=data_get($footBallFixturePushAll, "config_".$key,"");
                     if($text){
+                        Log::error("推送用户类型-发送数据：".$item->order_sn." - ".$item->user->referral_code);
                         $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn,$item->user->referral_code);
                     }
                     //插入执行过的订单
