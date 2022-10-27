@@ -5,11 +5,15 @@ namespace App\Services;
 use App;
 
 use App\model\Language;
+use App\model\Notification;
 use App\model\RedPacket;
+use App\model\RobotPushLog;
 use App\model\Sport\FootBallFixture;
 use App\model\Sport\FootBallFixturePush;
 use App\model\Sport\FootBallFixturePushAll;
 use App\model\Sport\FootballTeacherFixture;
+use App\model\UserRechargeOrder;
+use App\model\UserRobotSubscribe;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Storage;
@@ -302,7 +306,8 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->push_time){
             if(Carbon::make($footBallFixturePushAll->push_time)->addMinutes($footBallFixturePushAll->hours)->gt(Carbon::now())) return false;
         }
-        if($footBallFixturePushAll->red_command){
+        if($footBallFixturePushAll->slug=='NORECHARGE'){
+            return $this->pushMacthTimingSendNoRecharge($footBallFixturePushAll);
         }else{
             return $this->pushMacthTimingSend($footBallFixturePushAll);
         }
@@ -329,69 +334,11 @@ class RobotPushService extends BaseService
             $newRedPacket->save();
 
             $red_command=$newRedPacket->command;
-            $red_url="";
             $langList = Language::query()->pluck('id','slug')->toArray();
             foreach ($langList as $key=>$value){
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
-                    $count=1;
-                    foreach ($text as $vinfo){
-                        $count++;
-                        $delay=$footBallFixturePushAll->sleep_second * $count;
-                        $contents=data_get($vinfo, "contents","");
-
-                        if($contents){
-//                            $contents=str_replace("-","\-",$contents);
-//                            $contents=str_replace("——","\——",$contents);
-//                            $contents=str_replace(".","\.",$contents);
-//                            $contents=str_replace("+","\+",$contents);
-                            $contents=str_replace("{red}",$red_command,$contents);
-                            $contents=str_replace("{red_url}",$red_url,$contents);
-
-                            $params=[
-                                "level"=>$footBallFixturePushAll->type,
-                                "language"=>(string)$key,
-                                "text"=>$contents,
-                                "delay"=>$delay,
-                            ];
-                            if($footBallFixturePushAll->country){
-                                $params['country']=$footBallFixturePushAll->country;
-                            }
-                            if($footBallFixturePushAll->bot_name){
-                                $params['bot_name']=$footBallFixturePushAll->bot_name;
-                            }
-                            if($footBallFixturePushAll->is_top){
-                                $params['is_top']=$footBallFixturePushAll->is_top;
-                            }
-
-                            if($this->is_push){
-                                $this->httpWorkerman->post($this->pushUrl, $params);
-                            }
-                        }
-                        $img=data_get($vinfo, "icon","");
-                        if($img){
-                            $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
-                            $params=[
-                                "level"=>$footBallFixturePushAll->type,
-                                "delay"=>$delay-3,
-                                "language"=>(string)$key,
-                                "img_url"=>$img,
-                            ];
-                            if($footBallFixturePushAll->country){
-                                $params['country']=$footBallFixturePushAll->country;
-                            }
-                            if($footBallFixturePushAll->bot_name){
-                                $params['bot_name']=$footBallFixturePushAll->bot_name;
-                            }
-                            if($footBallFixturePushAll->is_top){
-                                $params['is_top']=$footBallFixturePushAll->is_top;
-                            }
-
-                            if($this->is_push){
-                                $this->httpWorkerman->post($this->pushUrl, $params);
-                            }
-                        }
-                    }
+                    $this->pushSend($footBallFixturePushAll,$text,$key,$red_command);
                 }
             }
             //更新数据
@@ -415,63 +362,7 @@ class RobotPushService extends BaseService
             foreach ($langList as $key=>$value){
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
-                    $count=1;
-                    foreach ($text as $vinfo){
-                        $count++;
-                        $delay=$footBallFixturePushAll->sleep_second * $count;
-                        $contents=data_get($vinfo, "contents","");
-
-                        if($contents){
-//                            $contents=str_replace("-","\-",$contents);
-//                            $contents=str_replace("——","\——",$contents);
-//                            $contents=str_replace(".","\.",$contents);
-//                            $contents=str_replace("+","\+",$contents);
-
-                            $params=[
-                                "level"=>$footBallFixturePushAll->type,
-                                "language"=>(string)$key,
-                                "text"=>$contents,
-                                "delay"=>$delay,
-                            ];
-                            if($footBallFixturePushAll->country){
-                                $params['country']=$footBallFixturePushAll->country;
-                            }
-                            if($footBallFixturePushAll->bot_name){
-                                $params['bot_name']=$footBallFixturePushAll->bot_name;
-                            }
-                            if($footBallFixturePushAll->is_top){
-                                $params['is_top']=$footBallFixturePushAll->is_top;
-                            }
-
-
-                            if($this->is_push){
-                                $this->httpWorkerman->post($this->pushUrl, $params);
-                            }
-                        }
-                        $img=data_get($vinfo, "icon","");
-                        if($img){
-                            $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
-                            $params=[
-                                "level"=>$footBallFixturePushAll->type,
-                                "delay"=>$delay-3,
-                                "language"=>(string)$key,
-                                "img_url"=>$img,
-                            ];
-                            if($footBallFixturePushAll->country){
-                                $params['country']=$footBallFixturePushAll->country;
-                            }
-                            if($footBallFixturePushAll->bot_name){
-                                $params['bot_name']=$footBallFixturePushAll->bot_name;
-                            }
-                            if($footBallFixturePushAll->is_top){
-                                $params['is_top']=$footBallFixturePushAll->is_top;
-                            }
-
-                            if($this->is_push){
-                                $this->httpWorkerman->post($this->pushUrl, $params);
-                            }
-                        }
-                    }
+                    $this->pushSend($footBallFixturePushAll,$text,$key);
                 }
             }
             //更新数据
@@ -488,6 +379,115 @@ class RobotPushService extends BaseService
         }
     }
 
+
+
+    public function pushMacthTimingSendNoRecharge(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
+    {
+        try {
+            //获取最近未支付成功订单
+            $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
+            //排出处理过的数据
+            $getids=RobotPushLog::query()->where('type',$footBallFixturePushAll->slug)->pluck('id');
+            UserRechargeOrder::query()
+                ->where('is_pay', 0)
+                ->where('order_status', 0)
+                ->whereIn('user_id', $ids)
+                ->whereIn('id', $getids)
+                ->where('created_at', '<', Carbon::now()->subMinutes($footBallFixturePushAll->hours))
+                ->where('created_at', '>', Carbon::now()->subMinutes(120))
+                ->with(['user'])->lazyById(1, function ($list) use (&$count,$footBallFixturePushAll) {
+                    $count = $count + count($list);
+                    foreach ($list as $item) {
+                        $key=$item->user->local;
+                        $text=data_get($footBallFixturePushAll, "config_".$key,"");
+                        if($text){
+                            $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn);
+                        }
+                        //插入执行过的订单
+                        RobotPushLog::query()
+                            ->firstOrCreate([
+                                'id' => $item->order_sn,
+                                'type' => $footBallFixturePushAll->slug,
+                            ],[
+                                'user_id' => $item->user_id,
+                                'local' => $key,
+                                'push_at' =>Carbon::now(),
+                            ]);
+                    }
+                });
+
+            //更新数据
+            if($is_myself==0){
+                $footBallFixturePushAll->push_time=Carbon::now();
+                $footBallFixturePushAll->status=true;
+                $footBallFixturePushAll->push_count=$footBallFixturePushAll->push_count+1;
+                $footBallFixturePushAll->save();
+            }
+            return true;
+        } catch (\Exception $exception) {
+            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            return false;
+        }
+    }
+
+
+
+
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="")
+    {
+        $count=1;
+        foreach ($content as $vinfo){
+            $count++;
+            $delay=$footBallFixturePushAll->sleep_second * $count;
+            $contents=data_get($vinfo, "contents","");
+
+            if($contents){
+                $contents=str_replace("{red}",$key,$contents);
+                $contents=str_replace("{order_sn}",$key,$contents);
+                $params=[
+                    "level"=>$footBallFixturePushAll->type,
+                    "language"=>(string)$language,
+                    "text"=>$contents,
+                    "delay"=>$delay,
+                ];
+                if($footBallFixturePushAll->country){
+                    $params['country']=$footBallFixturePushAll->country;
+                }
+                if($footBallFixturePushAll->bot_name){
+                    $params['bot_name']=$footBallFixturePushAll->bot_name;
+                }
+                if($footBallFixturePushAll->is_top){
+                    $params['is_top']=$footBallFixturePushAll->is_top;
+                }
+                if($this->is_push){
+                    $this->httpWorkerman->post($this->pushUrl, $params);
+                }
+            }
+            $img=data_get($vinfo, "icon","");
+            if($img){
+                $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
+                $params=[
+                    "level"=>$footBallFixturePushAll->type,
+                    "delay"=>$delay-3,
+                    "language"=>(string)$language,
+                    "img_url"=>$img,
+                ];
+                if($footBallFixturePushAll->country){
+                    $params['country']=$footBallFixturePushAll->country;
+                }
+                if($footBallFixturePushAll->bot_name){
+                    $params['bot_name']=$footBallFixturePushAll->bot_name;
+                }
+                if($footBallFixturePushAll->is_top){
+                    $params['is_top']=$footBallFixturePushAll->is_top;
+                }
+
+                if($this->is_push){
+                    $this->httpWorkerman->post($this->pushUrl, $params);
+                }
+            }
+        }
+    }
 
 
     /**
