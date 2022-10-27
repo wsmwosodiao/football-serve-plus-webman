@@ -34,8 +34,8 @@ class Task
         });
 
 
-        // 每2分钟的20秒分钟执行一次【机器人自定义推送】
-        new Crontab('20 */2 * * * *', function(){
+        // 每1分钟的20秒分钟执行一次【机器人自定义推送】
+        new Crontab('20 */1 * * * *', function(){
             RobotPushService::make()->pushMacthTiming();
             echo "机器人自定义推送：".date('Y-m-d H:i:s')."\n";
         });
