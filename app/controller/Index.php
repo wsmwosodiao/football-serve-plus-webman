@@ -10,7 +10,7 @@ class Index
     public function index(Request $request)
     {
         //发送队列 队列名称，数据，延迟时间
-        Client::send("send-message", ['name' => 'webman'], 10);
+        //Client::send("send-message", ['name' => 'webman'], 10);
 
         return response('hello webman');
     }
