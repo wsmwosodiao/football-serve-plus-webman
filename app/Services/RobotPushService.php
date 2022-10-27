@@ -16,6 +16,7 @@ use App\model\UserRechargeOrder;
 use App\model\UserRobotSubscribe;
 use Carbon\Carbon;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use support\Log;
@@ -255,7 +256,9 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where('slug',NULL)->orWhere('slug','NORECHARGE')
+            ->where(function (Builder $q) {
+                $q->whereNull('slug')->orWhere('slug', 'NORECHARGE');
+            })
             //->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(20, function ($list) use (&$count) {
