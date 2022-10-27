@@ -402,13 +402,13 @@ class RobotPushService extends BaseService
             ->where('order_status', 0)
             ->whereIn('user_id', $ids)
             ->whereNotIn('order_sn', $order_sns)
-            //->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
+            ->where('created_at', "<" ,Carbon::now()->subMinutes($footBallFixturePushAll->hours))
+            //->whereBetween('created_at', [Carbon::now()->subMinutes(30),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
             ->with(['user'])->lazyById(50)->each(function ($item) use (&$count,$footBallFixturePushAll) {
-                    $count = $count ++;
+                    $count ++;
                     $key=$item->user->local;
                     $text=data_get($footBallFixturePushAll, "config_".$key,"");
                     if($text){
-                        Log::error("推送用户类型-发送数据：".$item->order_sn." - ".$item->user->referral_code);
                         $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn,$item->user->referral_code);
                     }
                     //插入执行过的订单
@@ -418,6 +418,7 @@ class RobotPushService extends BaseService
                             'type' => $footBallFixturePushAll->slug,
                         ],[
                             'user_id' => $item->user_id,
+                            'referral_code'=> $item->user->referral_code,
                             'local' => $key,
                             'push_at' =>Carbon::now(),
                         ]);
