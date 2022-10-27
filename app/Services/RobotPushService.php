@@ -276,6 +276,7 @@ class RobotPushService extends BaseService
             ->where('is_push', true)
             ->where('sulg','RED')
             ->where('date', '<', Carbon::now())//开始时间
+            ->where('is_push_user', false)
             ->chunk(1, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
