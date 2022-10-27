@@ -251,9 +251,33 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
+            ->whereNull('sulg')
             ->where('is_push_user', false)
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(20, function ($list) use (&$count) {
+                $count = $count + count($list);
+                foreach ($list as $item) {
+                    $this->upPushMacthTiming($item);
+                }
+            });
+        if($count>0){
+            Log::info("自定义推送任务：".$count);
+        }
+
+    }
+
+    /**
+     * 推送自定义推送内容-红包
+     */
+    public function pushMacthTimingRed()
+    {
+        $count = 0;
+        FootBallFixturePushAll::query()
+            ->where('is_push', true)
+            ->where('sulg','RED')
+            ->where('is_push_user', false)
+            ->where('date', '<', Carbon::now())//开始时间
+            ->chunk(1, function ($list) use (&$count) {
                 $count = $count + count($list);
                 foreach ($list as $item) {
                     $this->upPushMacthTiming($item);

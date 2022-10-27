@@ -35,6 +35,8 @@ class FootBallFixturePushAll extends Model
 
     protected $casts = [
         'type' => 'integer',
+        'referral_code' => 'string',
+        'slug'=> 'string',
         'push_count' => 'integer',
         'hours' => 'integer',
         'sleep_second'=> 'integer',

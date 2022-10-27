@@ -40,6 +40,12 @@ class Task
             //echo "机器人自定义推送：".date('Y-m-d H:i:s')."\n";
         });
 
+        //每整点半小时红包
+        new Crontab('*/30 * * * *', function(){
+            RobotPushService::make()->pushMacthTimingRed();
+            echo "机器人整点红包推送：".date('Y-m-d H:i:s')."\n";
+        });
+
 
 //        // 每1秒执行
 //        new Crontab('*/1 * * * * *', function(){
