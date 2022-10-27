@@ -402,26 +402,27 @@ class RobotPushService extends BaseService
             ->where('order_status', 0)
             ->whereIn('user_id', $ids)
             ->whereNotIn('order_sn', $order_sns)
-            ->where('created_at', "<" ,Carbon::now()->subMinutes($footBallFixturePushAll->hours))
-            //->whereBetween('created_at', [Carbon::now()->subMinutes(30),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
-            ->with(['user'])->lazyById(50)->each(function ($item) use (&$count,$footBallFixturePushAll) {
-                    $count ++;
-                    $key=$item->user->local;
-                    $text=data_get($footBallFixturePushAll, "config_".$key,"");
-                    if($text){
-                        $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn,$item->user->referral_code);
+            ->where('created_at', ">" ,Carbon::now()->subMinutes(15))
+            ->with(['user'])->lazyById(10)->each(function ($item) use (&$count,$footBallFixturePushAll) {
+                    if(Carbon::make($item->created_at)->addMinutes($footBallFixturePushAll->hours)->lt(Carbon::now())){
+                        $count ++;
+                        $key=$item->user->local;
+                        $text=data_get($footBallFixturePushAll, "config_".$key,"");
+                        if($text){
+                            $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn,$item->user->referral_code);
+                        }
+                        //插入执行过的订单
+                        RobotPushLog::query()
+                            ->firstOrCreate([
+                                'id' => $item->order_sn,
+                                'type' => $footBallFixturePushAll->slug,
+                            ],[
+                                'user_id' => $item->user_id,
+                                'referral_code'=> $item->user->referral_code,
+                                'local' => $key,
+                                'push_at' =>Carbon::now(),
+                            ]);
                     }
-                    //插入执行过的订单
-                    RobotPushLog::query()
-                        ->firstOrCreate([
-                            'id' => $item->order_sn,
-                            'type' => $footBallFixturePushAll->slug,
-                        ],[
-                            'user_id' => $item->user_id,
-                            'referral_code'=> $item->user->referral_code,
-                            'local' => $key,
-                            'push_at' =>Carbon::now(),
-                        ]);
                 });
             Log::error("推送用户类型：".$footBallFixturePushAll->slug." 执行订单：".$count);
             //更新数据
