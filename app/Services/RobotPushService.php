@@ -403,25 +403,23 @@ class RobotPushService extends BaseService
             ->whereIn('user_id', $ids)
             ->whereNotIn('order_sn', $order_sns)
             ->whereBetween('created_at', [Carbon::now()->subMinutes(120),Carbon::now()->subMinutes($footBallFixturePushAll->hours)])
-            ->with(['user'])->chunk(50, function ($list) use (&$count,$footBallFixturePushAll) {
-                    $count = $count + count($list);
-                    foreach ($list as $item) {
-                        $key=$item->user->local;
-                        $text=data_get($footBallFixturePushAll, "config_".$key,"");
-                        if($text){
-                            $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn);
-                        }
-                        //插入执行过的订单
-                        RobotPushLog::query()
-                            ->firstOrCreate([
-                                'id' => $item->order_sn,
-                                'type' => $footBallFixturePushAll->slug,
-                            ],[
-                                'user_id' => $item->user_id,
-                                'local' => $key,
-                                'push_at' =>Carbon::now(),
-                            ]);
+            ->with(['user'])->lazyById(50)->each(function ($item) use (&$count,$footBallFixturePushAll) {
+                    $count = $count ++;
+                    $key=$item->user->local;
+                    $text=data_get($footBallFixturePushAll, "config_".$key,"");
+                    if($text){
+                        $this->pushSend($footBallFixturePushAll,$text,$key,$item->order_sn);
                     }
+                    //插入执行过的订单
+                    RobotPushLog::query()
+                        ->firstOrCreate([
+                            'id' => $item->order_sn,
+                            'type' => $footBallFixturePushAll->slug,
+                        ],[
+                            'user_id' => $item->user_id,
+                            'local' => $key,
+                            'push_at' =>Carbon::now(),
+                        ]);
                 });
             Log::error("推送用户类型：".$footBallFixturePushAll->slug." 执行订单：".$count);
             //更新数据
