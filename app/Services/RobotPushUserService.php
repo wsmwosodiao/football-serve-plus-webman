@@ -167,10 +167,7 @@ class RobotPushUserService extends BaseService
             $images=$footBallFixturePush->images;
             if($footBallFixturePush->contents){
                 $contents=$footBallFixturePush->contents;
-//                $contents=str_replace("-","\-",$contents);
-//                $contents=str_replace("——","\——",$contents);
-//                $contents=str_replace(".","\.",$contents);
-//                $contents=str_replace("+","\+",$contents);
+
                 $params=[
                     "level"=>0,
                     "language"=>$footBallFixturePush->lang,
@@ -182,7 +179,6 @@ class RobotPushUserService extends BaseService
                     $params['country']=$footBallFixturePush->country;
                 }
                 $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                //Log::info("推送赛事给用户-标题",["params"=>$params,"referral_code"=>$referral_code]);
                 if($this->is_push){
                     $this->httpWorkerman->post($this->pushUserUrl, $params);
                 }
@@ -203,10 +199,8 @@ class RobotPushUserService extends BaseService
                             $params['country']=$footBallFixturePush->country;
                         }
                         $params['bot_name']=$this->bot_name;//强制设置机器人为55data
-                        //Log::info("推送赛事给用户-图片",["params"=>$params,"referral_code"=>$referral_code,'url'=>$this->pushUserUrl,"is_Debug"=>$this->is_Debug]);
                         if($this->is_push){
                             $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
-                            //Log::info("推送赛事给用户-图片-返回",["res"=>$res,"referral_code"=>$referral_code]);
                         }
                         $i++;
                     }
@@ -214,10 +208,6 @@ class RobotPushUserService extends BaseService
             }
             if($footBallFixturePush->contents_introduction){
                 $contents=$footBallFixturePush->contents_introduction;
-//                $contents=str_replace("-","\-",$contents);
-//                $contents=str_replace("——","\——",$contents);
-//                $contents=str_replace(".","\.",$contents);
-//                $contents=str_replace("+","\+",$contents);
                 $params=[
                     "level"=>0,
                     "language"=>$footBallFixturePush->lang,
