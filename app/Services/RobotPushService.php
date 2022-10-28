@@ -327,7 +327,7 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->slug=='COMMISSION' && $type==1){
             $hour=(int)Carbon::now()->format('H');//整点对应时间--小时计算
             Log::info("自定义推送任务执行小时：".$hour." 实际发放小时：".$footBallFixturePushAll->hours);
-            if(1==1){//$hour==$footBallFixturePushAll->hours
+            if($hour==$footBallFixturePushAll->hours){//$hour==$footBallFixturePushAll->hours
                 return $this->pushMacthTimingSendCommission($footBallFixturePushAll);//收益推送
             }else{
                 return false;
