@@ -49,8 +49,17 @@ class RobotPushUserService extends BaseService
     {
         $count = 0;
         $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
+        $type=[
+            "UserFootballOrderOverNotification",//比赛结果通知
+            "UserWithdrawToPaySuccessNotification",//提款成功
+            "UserBetFootballCompensateNotification",//赔付通知
+            "VipAgentMonthSalaryCheckNotification",//代理工资审核
+            "RechargeOrderSuccessNotification",//充值成功
+            "UserCommissionNotification",//任务奖励
+        ];
         Notification::query()
             ->where('is_push', false)
+            ->whereIn('type',$type)
             ->whereIn('user_id', $ids)
             ->whereBetween('created_at', [Carbon::now()->subMinutes(20), Carbon::today()->endOfDay()])
             ->lazyById(1)->each(function ($item) use(&$count) {
@@ -61,7 +70,7 @@ class RobotPushUserService extends BaseService
     }
     public function pushMacthNotificationSend($notification_id)
     {
-        Log::info("推送用户站内通知-准备",["params"=>$notification_id]);
+        //Log::info("推送用户站内通知-准备",["params"=>$notification_id]);
         $notification=Notification::query()->with(['user'])->find($notification_id);
         $local=$notification->user->local;
 
@@ -77,9 +86,9 @@ class RobotPushUserService extends BaseService
                 "language"=>(string)$local,
                 "text"=>$content,
                 "delay"=>0,
-                "referral_code"=>"IP1JFHTY",//$notification->user->referral_code
+                "referral_code"=>$notification->user->referral_code //"IP1JFHTY",//
             ];
-            Log::info("推送用户站内通知发送",["params"=>$params,"user_id"=>$notification->user_id]);
+            //Log::info("推送用户站内通知发送",["params"=>$params,"user_id"=>$notification->user_id]);
             if($this->is_push){
                 $this->httpWorkerman->post($this->pushUserUrl, $params);
                 $notification->is_push_success=true;
