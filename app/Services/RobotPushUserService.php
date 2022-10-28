@@ -109,6 +109,16 @@ class RobotPushUserService extends BaseService
             }else if($notification->type=='UserBaseballOrderOverNotification' && $notification->content_slug=='UserFootballOrderLoseNotificationContent'){
                 $content=$this->getLang('FAIL_FOOTBALL_ORDER_CONTENT', $params, $local);
             }
+            if($notification->type=='VipAgentMonthSalaryCheckNotification'){
+                $content=$this->getLang('YOUR_APPLY_SALARY_N', $params, $local);
+                $pass=data_get($params,'pass',false);
+                if($pass){
+                    $content=$content."\n".$this->getLang('PASSED', [], $local);
+                }else{
+                    $content=$content."\n".$this->getLang('UNPASS', [], $local);
+                }
+            }
+
         }
 
         $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','OFFICIAL_WEBSITE')->first()->toArray();
