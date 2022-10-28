@@ -53,16 +53,10 @@ class RobotPushUserService extends BaseService
             ->where('is_push', false)
             ->whereIn('user_id', $ids)
             ->whereBetween('created_at', [Carbon::today(), Carbon::today()->endOfDay()])
-            ->lazyById(10, function ($list) use (&$count) {
-                $count = $count + count($list);
-                foreach ($list as $item) {
-                    \Webman\RedisQueue\Client::send("send-notification", $item->getKey());
-                }
+            ->lazyById(10)->each(function ($item) use(&$count) {
+                $count ++;
+                \Webman\RedisQueue\Client::send("send-notification", $item->getKey());
             });
-//             ->lazyById()->each(function (Notification $notification) use (&$count) {
-//                \Webman\RedisQueue\Client::send("send-message", $notification);
-//                $count++;
-//            });
         Log::info("推送用户站内通知：".$count);
     }
     public function pushMacthNotificationSend($notification_id)
