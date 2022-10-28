@@ -7,6 +7,7 @@ use App;
 use App\jobs\RobotNotification;
 use App\model\LanguageConfig;
 use App\model\Notification;
+use App\model\RejectInfo;
 use App\model\Sport\FootBallFixturePush;
 use App\model\User;
 use App\model\UserData;
@@ -111,6 +112,11 @@ class RobotPushUserService extends BaseService
             }
         }
 
+        $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','OFFICIAL_WEBSITE')->first()->toArray();
+        $contents_introduction = data_get($contents_introduction, "title.$local","");
+        if($contents_introduction){
+            $content=$content."\n".$contents_introduction;
+        }
         return $content;
     }
 
