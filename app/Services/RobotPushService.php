@@ -14,6 +14,7 @@ use App\model\Sport\FootBallFixturePushAll;
 use App\model\Sport\FootballTeacherFixture;
 use App\model\UserRechargeOrder;
 use App\model\UserRobotSubscribe;
+use App\model\WalletLogDayDataMongo;
 use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -256,6 +257,28 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
+            ->where('slug','RED')
+            ->where('date', '<', Carbon::now())//开始时间
+            ->chunk(5, function ($list) use (&$count) {
+                $count = $count + count($list);
+                foreach ($list as $item) {
+                    $this->upPushMacthTiming($item);
+                }
+            });
+        if($count>0){
+            Log::info("自定义推送任务：".$count);
+        }
+
+    }
+
+    /**
+     * 推送自定义推送内容
+     */
+    public function pushMacthTimingHour()
+    {
+        $count = 0;
+        FootBallFixturePushAll::query()
+            ->where('is_push', true)
             ->where(function (Builder $q) {
                 $q->whereNull('slug')->orWhere('slug', 'NORECHARGE');
             })
@@ -305,6 +328,15 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll->slug=='RED' && $type==1){
             return $this->pushMacthTimingSendRed($footBallFixturePushAll);//口令红包推送到群
         }
+
+        if($footBallFixturePushAll->slug=='COMMISSION' && $type==1){
+            $hour=(int)Carbon::now()->format('H');//整点对应时间--小时计算
+            if($hour==$footBallFixturePushAll->hours){
+                return $this->pushMacthTimingSendCommission($footBallFixturePushAll);//收益推送
+            }else{
+                return false;
+            }
+        }
         //推送时间间隔为0
         if($footBallFixturePushAll->hours == 0) return false;
         //处理是否到达可推送时间
@@ -319,6 +351,60 @@ class RobotPushService extends BaseService
             return $this->pushMacthTimingSend($footBallFixturePushAll);
         }
     }
+
+    public function pushMacthTimingSendCommission(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
+    {
+        try {
+            $count=0;
+
+            //获取最近未支付成功订单
+            $ids=UserRobotSubscribe::query()->where('is_bound_robot_subscribe',true)->pluck('user_id');
+            $time=Carbon::yesterday();
+            if($footBallFixturePushAll->other_slug && $footBallFixturePushAll->other_slug=='today'){
+                $time=Carbon::today();
+            }
+            WalletLogDayDataMongo::query()
+                ->whereIn('user_id', $ids)
+                ->whereNull('is_push')
+                ->where('day', $time)
+                ->lazyById(10)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
+                    $count ++;
+                    \Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]);
+                });
+            Log::error("推送用户昨日收益：".$footBallFixturePushAll->slug." 执行订单：".$count);
+            //更新数据
+            if($is_myself==0){
+                $footBallFixturePushAll->push_time=Carbon::now();
+                $footBallFixturePushAll->status=true;
+                $footBallFixturePushAll->push_count=$footBallFixturePushAll->push_count+1;
+                $footBallFixturePushAll->save();
+            }
+            return true;
+        } catch (\Exception $exception) {
+            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function pushMacthTimingQueue($id,$content_id)
+    {
+        $walletLogDayDataMongo=WalletLogDayDataMongo::query()->with(['user'])->find($id);
+        $footBallFixturePushAll=FootBallFixturePushAll::query()->find($content_id);
+        if($walletLogDayDataMongo && $footBallFixturePushAll){
+            $key=$walletLogDayDataMongo->user->local;
+            $text=data_get($footBallFixturePushAll, "config_".$key,"");
+            $usdt=$walletLogDayDataMongo->USDT_commission?:0;
+            if($text && $usdt>0){
+                $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,$walletLogDayDataMongo->user->referral_code);
+            }else{
+                Log::error($walletLogDayDataMongo." 用户 ".$walletLogDayDataMongo->user->referral_code." 收益金额：".$usdt." - 不推送");
+            }
+            $walletLogDayDataMongo->is_push=true;
+            $walletLogDayDataMongo->push_at= Carbon::now();
+            $walletLogDayDataMongo->save();
+        }
+    }
+
 
     public function pushMacthTimingSendRed(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
     {
@@ -453,6 +539,7 @@ class RobotPushService extends BaseService
             if($contents){
                 $contents=str_replace("{red}",$key,$contents);
                 $contents=str_replace("{order_sn}",$key,$contents);
+                $contents=str_replace("{commission}",$key,$contents);
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
                     "language"=>(string)$language,

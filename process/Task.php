@@ -46,6 +46,11 @@ class Task
             echo "机器人整点红包推送：".date('Y-m-d H:i:s')."\n";
         });
 
+        // 每1小时整点推送
+        new Crontab('0 */1 * * *', function(){
+            RobotPushService::make()->pushMacthTimingHour();
+            echo "每1小时整点推送-昨日收益：".date('Y-m-d H:i:s')."\n";
+        });
 
 //        // 每1秒执行
 //        new Crontab('*/1 * * * * *', function(){
