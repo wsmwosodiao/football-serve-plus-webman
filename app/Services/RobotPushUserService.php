@@ -64,7 +64,13 @@ class RobotPushUserService extends BaseService
         Log::info("推送用户站内通知-准备",["params"=>$notification_id]);
         $notification=Notification::query()->with(['user'])->find($notification_id);
         $local=$notification->user->local;
-        $content=$this->getContent($notification,$local);
+
+        if($notification->type=='UserFootballOrderOverNotification'){//比赛结果直接拼凑
+            $content=$this->getContentOther($notification,$local);
+        }else{
+            $content=$this->getContent($notification,$local);
+        }
+
         if($content){
             $params=[
                 "level"=>0,
@@ -88,7 +94,37 @@ class RobotPushUserService extends BaseService
         $notification->save();
         return true;
     }
+    public function getContentOther($notification,$local)
+    {
+        $content="";
+        if($notification->title_slug=='UserFootballOrderWinNotificationTitle'){
+            $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','WIN_FOOTBALL_ORDER_CONTENT')->first()->toArray();
+            $content = data_get($contents_introduction, "title.$local","");
+        }
+        if($notification->title_slug=='UserFootballOrderRefundNotificationTitle'){
+            $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','REFUND_FOOTBALL_ORDER_CONTENT')->first()->toArray();
+            $content = data_get($contents_introduction, "title.$local","");
+        }
+        if($notification->title_slug=='UserFootballOrderLoseNotificationTitle'){
+            $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','FAIL_FOOTBALL_ORDER_CONTENT')->first()->toArray();
+            $content = data_get($contents_introduction, "title.$local","");
+        }
 
+        $fixture_id=data_get($notification->data,"fixture_id");
+        $win_amount=data_get($notification->params,"win_amount");
+        $wallet_type=data_get($notification->params,"win_amount_wallet_type");
+        //替换
+        $content=str_replace("{fixture_id}",$fixture_id,$content);
+        $content=str_replace("{win_amount}",$win_amount,$content);
+        $content=str_replace("{wallet_type}",$wallet_type,$content);
+
+        $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','OFFICIAL_WEBSITE')->first()->toArray();
+        $contents_introduction = data_get($contents_introduction, "title.$local","");
+        if($contents_introduction){
+            $content=$content."\n".$contents_introduction;
+        }
+        return $content;
+    }
     public function getContent($notification,$local)
     {
 
@@ -138,7 +174,7 @@ class RobotPushUserService extends BaseService
         if($contents_introduction){
             $content=$content."\n".$contents_introduction;
         }
-        Log::info("推送用户站内通知发送内容获取-结果",["content"=>$content,"content_slug"=>$notification->content_slug,"local"=>$local]);
+        //Log::info("推送用户站内通知发送内容获取-结果",["content"=>$content,"content_slug"=>$notification->content_slug,"local"=>$local]);
         return $content;
     }
 
