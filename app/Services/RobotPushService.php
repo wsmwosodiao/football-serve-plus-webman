@@ -363,9 +363,11 @@ class RobotPushService extends BaseService
                 ->whereIn('user_id', $ids)
                 ->whereNull('is_push')
                 ->where('day', $time)
+                ->limit(1)
                 ->lazyById(1)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
                     $count ++;
-                    \Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]);
+                    //\Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]);
+                    $this->pushMacthTimingQueue($item->getKey(),$footBallFixturePushAll->getKey());
                 });
             Log::error("推送用户昨日收益：".$footBallFixturePushAll->slug." 执行订单：".$count);
             //更新数据
@@ -391,7 +393,7 @@ class RobotPushService extends BaseService
             $text=data_get($footBallFixturePushAll, "config_".$key,"");
             $usdt=$walletLogDayDataMongo->USDT_commission?:0;
             if($text && $usdt>0){
-                $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,$walletLogDayDataMongo->user->referral_code);//$walletLogDayDataMongo->user->referral_code
+                $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,'IP1JFHTY');//$walletLogDayDataMongo->user->referral_code
             }else{
                 Log::error($walletLogDayDataMongo." 用户 ".$walletLogDayDataMongo->user->referral_code." 收益金额：".$usdt." - 不推送");
             }
