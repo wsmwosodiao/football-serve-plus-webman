@@ -366,7 +366,7 @@ class RobotPushService extends BaseService
                 ->limit(1)
                 ->lazyById(1)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
                     $count ++;
-                    //\Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]);
+                    //\Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]); //链接redis 超时
                     $this->pushMacthTimingQueue($item->getKey(),$footBallFixturePushAll->getKey());
                 });
             Log::error("推送用户昨日收益：".$footBallFixturePushAll->slug." 执行订单：".$count);
