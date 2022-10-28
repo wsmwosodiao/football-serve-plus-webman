@@ -123,7 +123,7 @@ class RobotPushUserService extends BaseService
         }
         $fixture_id=data_get($notification->data,"fixture_id");
         if($notification->type=='UserMetaFootballOrderOverNotification'){
-            $fixture_id=data_get($notification->data->game,"key");
+            $fixture_id=data_get(data_get($notification->data,"game"),"key");
         }
 
         $win_amount=data_get($notification->params,"win_amount");
