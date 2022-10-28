@@ -360,7 +360,7 @@ class RobotPushService extends BaseService
                 $time=Carbon::today();
             }
             WalletLogDayDataMongo::query()
-                ->whereIn('user_id', $ids)
+                //->whereIn('user_id', $ids)
                 ->whereNull('is_push')
                 ->where('day', $time)
                 ->limit(1)
