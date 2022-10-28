@@ -283,7 +283,7 @@ class RobotPushService extends BaseService
             ->where('date', '<', Carbon::now())//开始时间
             ->lazyById(1)->each(function ($item) use (&$count) {
                 $count ++;
-                $this->upPushMacthTiming($item);
+                $this->upPushMacthTiming($item,1);
             });
         if($count>0){
             Log::info("整点收益推送：".$count);
