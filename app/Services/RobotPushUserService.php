@@ -73,7 +73,9 @@ class RobotPushUserService extends BaseService
         //Log::info("推送用户站内通知-准备",["params"=>$notification_id]);
         $notification=Notification::query()->with(['user'])->find($notification_id);
         $local=$notification->user->local;
-
+        if($local=='CN'){
+            $local="EN";
+        }
         if($notification->type=='UserFootballOrderOverNotification'){//比赛结果直接拼凑
             $content=$this->getContentOther($notification,$local);
         }else{
