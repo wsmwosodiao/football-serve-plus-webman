@@ -367,7 +367,7 @@ class RobotPushService extends BaseService
                 ->whereIn('user_id', $ids)
                 ->whereNull('is_push')
                 ->where('day', $time)
-                ->lazyById(10)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
+                ->lazyById(1)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
                     $count ++;
                     \Webman\RedisQueue\Client::send("send-commission", ["id"=>$item->getKey(),"content_id"=>$footBallFixturePushAll->getKey()]);
                 });
