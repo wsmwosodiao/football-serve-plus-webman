@@ -96,9 +96,9 @@ class RobotPushUserService extends BaseService
             if (is_array($value)) {
                 return $value;
             }
-            if (Str::contains($key, ['_lang', '_type'])) {
-                return $this->getLang($value, [], $local);
-            }
+//            if (Str::contains($key, ['_lang', '_type'])) {
+//                return $this->getLang($value, [], $local);
+//            }
             return $value;
         })->toArray();
         $content=$this->getLang($notification->content_slug, $params, $local);
