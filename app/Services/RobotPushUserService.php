@@ -109,15 +109,15 @@ class RobotPushUserService extends BaseService
     public function getContentOther($notification,$local)
     {
         $content="";
-        if($notification->title_slug=='UserFootballOrderWinNotificationTitle'){
+        if($notification->title_slug=='UserFootballOrderWinNotificationTitle' || $notification->title_slug=='UserMetaFootballOrderWinNotificationTitle'){
             $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','WIN_FOOTBALL_ORDER_CONTENT')->first()->toArray();
             $content = data_get($contents_introduction, "title.$local","");
         }
-        if($notification->title_slug=='UserFootballOrderRefundNotificationTitle'){
+        if($notification->title_slug=='UserFootballOrderRefundNotificationTitle'  || $notification->title_slug=='UserMetaFootballOrderRefundNotificationTitle'){
             $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','REFUND_FOOTBALL_ORDER_CONTENT')->first()->toArray();
             $content = data_get($contents_introduction, "title.$local","");
         }
-        if($notification->title_slug=='UserFootballOrderLoseNotificationTitle'){
+        if($notification->title_slug=='UserFootballOrderLoseNotificationTitle' || $notification->title_slug=='UserMetaFootballOrderLoseNotificationTitle'){
             $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','FAIL_FOOTBALL_ORDER_CONTENT')->first()->toArray();
             $content = data_get($contents_introduction, "title.$local","");
         }
