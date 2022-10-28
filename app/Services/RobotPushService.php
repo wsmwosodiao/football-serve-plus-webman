@@ -392,6 +392,7 @@ class RobotPushService extends BaseService
             $key=$walletLogDayDataMongo->user->local;
             $text=data_get($footBallFixturePushAll, "config_".$key,"");
             $usdt=$walletLogDayDataMongo->USDT_commission?:0;
+            $usdt=sprintf("%.2f",substr(sprintf("%.3f", $usdt), 0, -2));
             if($text && $usdt>0){
                 $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,$walletLogDayDataMongo->user->referral_code);//$walletLogDayDataMongo->user->referral_code
             }else{
