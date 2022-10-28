@@ -326,7 +326,7 @@ class RobotPushService extends BaseService
 
         if($footBallFixturePushAll->slug=='COMMISSION' && $type==1){
             $hour=(int)Carbon::now()->format('H');//整点对应时间--小时计算
-            Log::info("红包自定义推送任务执行小时：".$hour." 实际发放小时：".$footBallFixturePushAll->hours);
+            Log::info("自定义推送任务执行小时：".$hour." 实际发放小时：".$footBallFixturePushAll->hours);
             if(1==1){//$hour==$footBallFixturePushAll->hours
                 return $this->pushMacthTimingSendCommission($footBallFixturePushAll);//收益推送
             }else{
@@ -360,7 +360,7 @@ class RobotPushService extends BaseService
                 $time=Carbon::today();
             }
             WalletLogDayDataMongo::query()
-                ->whereIn('user_id', $ids)
+                //->whereIn('user_id', $ids)
                 ->whereNull('is_push')
                 ->where('day', $time)
                 ->lazyById(1)->each(function ($item) use (&$count,$footBallFixturePushAll,$time) {
@@ -391,7 +391,7 @@ class RobotPushService extends BaseService
             $text=data_get($footBallFixturePushAll, "config_".$key,"");
             $usdt=$walletLogDayDataMongo->USDT_commission?:0;
             if($text && $usdt>0){
-                $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,$walletLogDayDataMongo->user->referral_code);
+                $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,"IP1JFHTY");//$walletLogDayDataMongo->user->referral_code
             }else{
                 Log::error($walletLogDayDataMongo." 用户 ".$walletLogDayDataMongo->user->referral_code." 收益金额：".$usdt." - 不推送");
             }
