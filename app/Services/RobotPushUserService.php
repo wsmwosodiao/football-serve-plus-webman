@@ -67,7 +67,7 @@ class RobotPushUserService extends BaseService
     }
     public function pushMacthNotificationSend($notification_id)
     {
-        $notification=Notification::query()->get()->first($notification_id);
+        $notification=Notification::query()->with(['user'])->get()->first($notification_id);
         $local=$notification->user->local;
         $content=$this->getContent($notification,$local);
         if($content){
@@ -81,11 +81,14 @@ class RobotPushUserService extends BaseService
             Log::info("推送用户站内通知发送",["params"=>$params,"user_id"=>$notification->user_id]);
             if($this->is_push){
                 $this->httpWorkerman->post($this->pushUserUrl, $params);
+                $notification->is_push_success=true;
+                $notification->save();
             }
+        }else{
+            Log::info("推送用户站内通知发送-没有内容",["id"=>$notification->_id,"user_id"=>$notification->user_id]);
         }
 
         $notification->is_push=true;
-        $notification->is_push_success=true;
         $notification->push_at=Carbon::now();
         $notification->save();
         return true;
