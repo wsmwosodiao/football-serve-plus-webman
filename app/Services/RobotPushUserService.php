@@ -119,6 +119,18 @@ class RobotPushUserService extends BaseService
                 }
             }
 
+            if($notification->type=='UserFootballOrderOverNotification'){//通知比赛结果
+                $content=$this->getLang('WIN_FOOTBALL_ORDER_CONTENT', $params, $local);
+                $is_refund=data_get($params,'is_refund');
+                $match=data_get($params,'match');
+                if($is_refund){
+                    $content=$this->getLang('REFUND_FOOTBALL_ORDER_CONTENT', $params, $local);
+                }
+                if($match){
+                    $content=$this->getLang('FAIL_FOOTBALL_ORDER_CONTENT', $params, $local);
+                }
+            }
+
         }
 
         $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','OFFICIAL_WEBSITE')->first()->toArray();
