@@ -56,6 +56,7 @@ class RobotPushUserService extends BaseService
             "VipAgentMonthSalaryCheckNotification",//代理工资审核
             "RechargeOrderSuccessNotification",//充值成功
             "UserCommissionNotification",//任务奖励
+            "UserMetaFootballOrderOverNotification",//任务奖励
         ];
         Notification::query()
             ->where('is_push', false)
@@ -76,7 +77,7 @@ class RobotPushUserService extends BaseService
         if($local=='CN'){
             $local="EN";
         }
-        if($notification->type=='UserFootballOrderOverNotification'){//比赛结果直接拼凑
+        if($notification->type=='UserFootballOrderOverNotification' || $notification->type=='UserMetaFootballOrderOverNotification'){//比赛结果直接拼凑
             $content=$this->getContentOther($notification,$local);
         }else{
             $content=$this->getContent($notification,$local);
@@ -120,8 +121,11 @@ class RobotPushUserService extends BaseService
             $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','FAIL_FOOTBALL_ORDER_CONTENT')->first()->toArray();
             $content = data_get($contents_introduction, "title.$local","");
         }
-
         $fixture_id=data_get($notification->data,"fixture_id");
+        if($notification->type=='UserMetaFootballOrderOverNotification'){
+            $fixture_id=data_get($notification->data->game,"key");
+        }
+
         $win_amount=data_get($notification->params,"win_amount");
         $wallet_type=data_get($notification->params,"win_amount_wallet_type");
         //替换
