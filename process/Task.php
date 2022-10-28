@@ -47,7 +47,7 @@ class Task
         });
 
         // 每1小时整点推送  0 */1 * * *
-        new Crontab('1 */1 * * * *', function(){
+        new Crontab('0 */1 * * *', function(){
             RobotPushService::make()->pushMacthTimingHour();
             echo "每1小时整点推送-昨日收益：".date('Y-m-d H:i:s')."\n";
         });
