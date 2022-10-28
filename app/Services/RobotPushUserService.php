@@ -52,8 +52,8 @@ class RobotPushUserService extends BaseService
         Notification::query()
             ->where('is_push', false)
             ->whereIn('user_id', $ids)
-            ->whereBetween('created_at', [Carbon::today(), Carbon::today()->endOfDay()])
-            ->lazyById(10)->each(function ($item) use(&$count) {
+            ->whereBetween('created_at', [Carbon::now()->subMinutes(20), Carbon::today()->endOfDay()])
+            ->lazyById(1)->each(function ($item) use(&$count) {
                 $count ++;
                 \Webman\RedisQueue\Client::send("send-notification", $item->getKey());
             });
