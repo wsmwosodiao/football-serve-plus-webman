@@ -113,9 +113,9 @@ class RobotPushUserService extends BaseService
                 $content=$this->getLang('YOUR_APPLY_SALARY_N', $params, $local);
                 $pass=data_get($params,'pass',false);
                 if($pass){
-                    $content=$content." ".$this->getLang('PASSED', [], $local);
+                    $content=$content."\n".$this->getLang('PASSED', [], $local);
                 }else{
-                    $content=$content." ".$this->getLang('UNPASS', [], $local);
+                    $content=$content."\n".$this->getLang('UNPASS', [], $local);
                 }
             }
 
