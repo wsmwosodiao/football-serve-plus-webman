@@ -102,6 +102,7 @@ class RobotPushUserService extends BaseService
             return $value;
         })->toArray();
         $content=$this->getLang($notification->content_slug, $params, $local);
+        Log::info("推送用户站内通知发送内容获取",["content"=>$content,"content_slug"=>$notification->content_slug,"local"=>$local]);
         if(!$content){
             if($notification->type=='UserBaseballOrderOverNotification' && $notification->content_slug=='UserBaseballOrderWinNotificationContent'){
                 $content=$this->getLang('WIN_FOOTBALL_ORDER_CONTENT', $params, $local);
@@ -115,6 +116,7 @@ class RobotPushUserService extends BaseService
         if($contents_introduction){
             $content=$content."\n".$contents_introduction;
         }
+        Log::info("推送用户站内通知发送内容获取-结果",["content"=>$content,"content_slug"=>$notification->content_slug,"local"=>$local]);
         return $content;
     }
 
