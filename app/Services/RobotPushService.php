@@ -395,7 +395,7 @@ class RobotPushService extends BaseService
             if($text && $usdt>0){
                 $this->pushSend($footBallFixturePushAll,$text,$key,$usdt,$walletLogDayDataMongo->user->referral_code);//$walletLogDayDataMongo->user->referral_code
             }else{
-                Log::error($walletLogDayDataMongo." 用户 ".$walletLogDayDataMongo->user->referral_code." 收益金额：".$usdt." - 不推送");
+                Log::error($walletLogDayDataMongo->user_id." 用户 ".$walletLogDayDataMongo->user->referral_code." 收益金额：".$usdt." - 不推送");
             }
             $walletLogDayDataMongo->is_push=true;
             $walletLogDayDataMongo->push_at= Carbon::now();
