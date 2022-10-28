@@ -61,6 +61,7 @@ class RobotPushUserService extends BaseService
     }
     public function pushMacthNotificationSend($notification_id)
     {
+        Log::info("推送用户站内通知-准备",["params"=>$notification_id]);
         $notification=Notification::query()->with(['user'])->get()->first($notification_id);
         $local=$notification->user->local;
         $content=$this->getContent($notification,$local);
