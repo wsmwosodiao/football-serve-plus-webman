@@ -291,7 +291,7 @@ class RobotPushService extends BaseService
                 }
             });
         if($count>0){
-            Log::info("自定义推送任务：".$count);
+            Log::info("整点收益推送：".$count);
         }
 
     }
@@ -331,7 +331,8 @@ class RobotPushService extends BaseService
 
         if($footBallFixturePushAll->slug=='COMMISSION' && $type==1){
             $hour=(int)Carbon::now()->format('H');//整点对应时间--小时计算
-            if($hour==$footBallFixturePushAll->hours){
+            Log::info("红包自定义推送任务执行小时：".$hour." 实际发放小时：".$footBallFixturePushAll->hours);
+            if(1==1){//$hour==$footBallFixturePushAll->hours
                 return $this->pushMacthTimingSendCommission($footBallFixturePushAll);//收益推送
             }else{
                 return false;
