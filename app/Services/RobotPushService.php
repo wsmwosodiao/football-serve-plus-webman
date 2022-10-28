@@ -279,16 +279,11 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where(function (Builder $q) {
-                $q->whereNull('slug')->orWhere('slug', 'NORECHARGE');
-            })
-            //->where('is_push_user', false)
+            ->where('slug','COMMISSION')
             ->where('date', '<', Carbon::now())//开始时间
-            ->chunk(20, function ($list) use (&$count) {
-                $count = $count + count($list);
-                foreach ($list as $item) {
-                    $this->upPushMacthTiming($item);
-                }
+            ->lazyById(1)->each(function ($item) use (&$count) {
+                $count ++;
+                $this->upPushMacthTiming($item);
             });
         if($count>0){
             Log::info("整点收益推送：".$count);
