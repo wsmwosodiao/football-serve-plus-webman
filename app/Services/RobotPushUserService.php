@@ -186,7 +186,7 @@ class RobotPushUserService extends BaseService
             }
 
         }
-
+        $content=str_replace("\\","",$content);
         $contents_introduction = RejectInfo::query()->where('group', 'other')->where('slug','OFFICIAL_WEBSITE')->first()->toArray();
         $contents_introduction = data_get($contents_introduction, "title.$local","");
         if($contents_introduction){
