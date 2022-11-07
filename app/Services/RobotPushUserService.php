@@ -261,7 +261,10 @@ class RobotPushUserService extends BaseService
                 if($footBallFixturePush->country){
                     $params['country']=$footBallFixturePush->country;
                 }
-                $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+                if($footBallFixturePush->bot_name){
+                    $params['bot_name']=$footBallFixturePush->bot_name;
+                }
+                //$params['bot_name']=$footBallFixturePush->bot_name;//强制设置机器人为55data
                 if($this->is_push){
                     $this->httpWorkerman->post($this->pushUserUrl, $params);
                 }
@@ -281,7 +284,10 @@ class RobotPushUserService extends BaseService
                         if($footBallFixturePush->country){
                             $params['country']=$footBallFixturePush->country;
                         }
-                        $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+                        if($footBallFixturePush->bot_name){
+                            $params['bot_name']=$footBallFixturePush->bot_name;
+                        }
+                        //$params['bot_name']=$this->bot_name;//强制设置机器人为55data
                         if($this->is_push){
                             $res=$this->httpWorkerman->post($this->pushUserUrl, $params);
                         }
@@ -301,7 +307,11 @@ class RobotPushUserService extends BaseService
                 if($footBallFixturePush->country){
                     $params['country']=$footBallFixturePush->country;
                 }
-                $params['bot_name']=$this->bot_name;//强制设置机器人为55data
+
+                if($footBallFixturePush->bot_name){
+                    $params['bot_name']=$footBallFixturePush->bot_name;
+                }
+                //$params['bot_name']=$footBallFixturePush->bot_name;//强制设置机器人为55data
                 //Log::info("推送赛事给用户-简介",["params"=>$params,"referral_code"=>$referral_code]);
                 if($this->is_push){
                     $this->httpWorkerman->post($this->pushUserUrl, $params);

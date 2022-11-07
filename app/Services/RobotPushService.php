@@ -257,7 +257,7 @@ class RobotPushService extends BaseService
         $count = 0;
         FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where('slug','RED')
+            ->whereNull('slug')
             ->where('date', '<', Carbon::now())//开始时间
             ->chunk(5, function ($list) use (&$count) {
                 $count = $count + count($list);
