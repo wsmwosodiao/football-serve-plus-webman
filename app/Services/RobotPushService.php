@@ -483,7 +483,7 @@ class RobotPushService extends BaseService
                     ->where('slug',$slug)->first();
             }
 
-            if( $count >2){
+            if( $count >2  && $footBallFixturePushAll){
                 $this->pushMacthTimingSend($footBallFixturePushAll,0,$count);
                 Log::info("自定义推送任务Slug：".$slug);
             }
@@ -502,6 +502,9 @@ class RobotPushService extends BaseService
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
                     $this->pushSend($footBallFixturePushAll,$text,$key,$keys);
+                    if($keys){
+                        Log::info("推送值：".$keys.", Slug:".$footBallFixturePushAll->slug);
+                    }
                 }
             }
             //更新数据
