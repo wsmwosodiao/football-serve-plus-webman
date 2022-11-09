@@ -15,6 +15,7 @@ use App\model\Sport\FootballTeacherFixture;
 use App\model\UserRechargeOrder;
 use App\model\UserRobotSubscribe;
 use App\model\WalletLogDayDataMongo;
+use App\model\Game\ShotGame;
 use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -447,14 +448,62 @@ class RobotPushService extends BaseService
         }
     }
 
-    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0): bool
+
+    /**
+     * 推送自定义推送内容-Slug
+     */
+    public function pushMacthSlug($slug="FOOTY")
+    {
+        $footBallFixturePushAll=FootBallFixturePushAll::query()
+            ->where('is_push', true)
+            ->where('slug',$slug)
+            ->where('date', '<', Carbon::now())//开始时间
+            ->where('is_push_user', false)->first();
+
+        if($footBallFixturePushAll){
+            $list = ShotGame::query()->where('game_over', true)->orderByDesc('round')->take(20)->get();
+            /** @var ShotGame $last */
+            $last = $list->first();
+            //结果类型 y进球 n未进球
+            $result = $last->shot_result;
+            //连续次数
+            $count = 0;
+            /** @var ShotGame $item */
+            foreach ($list as $item) {
+                if ($result == $item->shot_result) {
+                    $count++;
+                } else {
+                    break;
+                }
+            }
+            $slug="FOOTN";
+            if($result == 'y' && $count >2){
+                $footBallFixturePushAll=FootBallFixturePushAll::query()
+                    ->where('is_push', true)
+                    ->where('slug',$slug)
+                    ->where('date', '<', Carbon::now())//开始时间
+                    ->where('is_push_user', false)->first();
+            }
+
+            if( $count >2){
+                $this->pushMacthTimingSend($footBallFixturePushAll,0,$count);
+                Log::info("自定义推送任务Slug：".$slug);
+            }
+
+        }
+
+
+
+    }
+
+    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys=""): bool
     {
         try {
             $langList = Language::query()->pluck('id','slug')->toArray();
             foreach ($langList as $key=>$value){
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
-                    $this->pushSend($footBallFixturePushAll,$text,$key);
+                    $this->pushSend($footBallFixturePushAll,$text,$key,$keys);
                 }
             }
             //更新数据
@@ -539,6 +588,7 @@ class RobotPushService extends BaseService
                 $contents=str_replace("{red}",$key,$contents);
                 $contents=str_replace("{order_sn}",$key,$contents);
                 $contents=str_replace("{commission}",$key,$contents);
+                $contents=str_replace("{count}",$key,$contents);
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
                     "language"=>(string)$language,
