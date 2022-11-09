@@ -615,6 +615,25 @@ class RobotPushService extends BaseService
                         $this->httpWorkerman->post($this->pushUrl, $params);
                     }
                 }
+
+               if( $footBallFixturePushAll->slug=="FOOTN" ||  $footBallFixturePushAll->slug=="FOOTY"){
+                   if($this->is_push){
+                       $type=(int)$footBallFixturePushAll->type;
+                       if($type==2){
+                           $params['level']=1;
+                       }else{
+                           $params['level']=2;
+                       }
+
+                       if($referral_code){
+                           $this->httpWorkerman->post($this->pushUserUrl, $params);
+                       }else{
+                           $this->httpWorkerman->post($this->pushUrl, $params);
+                       }
+                   }
+               }
+
+
             }
             $img=data_get($vinfo, "icon","");
             if($img){
