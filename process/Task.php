@@ -21,10 +21,10 @@ class Task
         });
 
         // 每5分钟执行一次【2小时内开赛小时赛事图片】
-        new Crontab('*/5 * * * *', function(){
-            RobotPushService::make()->getTodayMacthTwoHoursList();
-            echo "获取2小时内开赛赛事图片：".date('Y-m-d H:i:s')."\n";
-        });
+//        new Crontab('*/5 * * * *', function(){
+//            RobotPushService::make()->getTodayMacthTwoHoursList();
+//            echo "获取2小时内开赛赛事图片：".date('Y-m-d H:i:s')."\n";
+//        });
 
 
         // 每3分钟的10秒分钟执行一次【赛事图片推送】
