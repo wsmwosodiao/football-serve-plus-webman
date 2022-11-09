@@ -63,17 +63,17 @@ class Task
 
 
         // 每1分钟的1秒分钟执行一次【用户站内信】
-        new Crontab('16 */1 * * * *', function(){
+        new Crontab('18 */1 * * * *', function(){
             RobotPushService::make()->pushMacthSlug();
             echo "16进球推送推送：".date('Y-m-d H:i:s')."\n";
         });
         // 每1分钟的1秒分钟执行一次【用户站内信】
-        new Crontab('36 */1 * * * *', function(){
+        new Crontab('38 */1 * * * *', function(){
             RobotPushService::make()->pushMacthSlug();
             echo "36进球推送推送：".date('Y-m-d H:i:s')."\n";
         });
         // 每1分钟的1秒分钟执行一次【用户站内信】
-        new Crontab('56 */1 * * * *', function(){
+        new Crontab('58 */1 * * * *', function(){
             RobotPushService::make()->pushMacthSlug();
             echo "56进球推送推送：".date('Y-m-d H:i:s')."\n";
         });
