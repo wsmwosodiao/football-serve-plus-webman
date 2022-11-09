@@ -477,7 +477,7 @@ class RobotPushService extends BaseService
                 }
             }
             $slug="FOOTN";
-            if($result == 'y' && $count >2){
+            if($result == 'n' && $count >2){
                 $footBallFixturePushAll=FootBallFixturePushAll::query()
                     ->where('is_push', true)
                     ->where('slug',$slug)
