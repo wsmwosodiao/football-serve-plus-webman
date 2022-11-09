@@ -15,10 +15,10 @@ class Task
     public function onWorkerStart()
     {
         // 每3小时执行(整点)【获取24小时赛事图片】
-        new Crontab('0 */3 * * *', function(){
-            RobotPushService::make()->getTodayMacth();
-            echo "获取24小时赛事图片：".date('Y-m-d H:i:s')."\n";
-        });
+//        new Crontab('0 */3 * * *', function(){
+//            RobotPushService::make()->getTodayMacth();
+//            echo "获取24小时赛事图片：".date('Y-m-d H:i:s')."\n";
+//        });
 
         // 每5分钟执行一次【2小时内开赛小时赛事图片】
 //        new Crontab('*/5 * * * *', function(){
@@ -28,10 +28,10 @@ class Task
 
 
         // 每3分钟的10秒分钟执行一次【赛事图片推送】
-        new Crontab('10 */2 * * * *', function(){
-            RobotPushService::make()->pushMacth();
-            echo "机器人赛事图片推送：".date('Y-m-d H:i:s')."\n";
-        });
+//        new Crontab('10 */2 * * * *', function(){
+//            RobotPushService::make()->pushMacth();
+//            echo "机器人赛事图片推送：".date('Y-m-d H:i:s')."\n";
+//        });
 
 
         // 每2分钟的20秒分钟执行一次【机器人自定义推送】
