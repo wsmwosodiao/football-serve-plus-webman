@@ -502,9 +502,9 @@ class RobotPushService extends BaseService
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
                     $this->pushSend($footBallFixturePushAll,$text,$key,$keys);
-                    if($keys){
-                        Log::info("推送值：".$keys.", Slug:".$footBallFixturePushAll->slug);
-                    }
+//                    if($keys){
+//                        Log::info("推送值：".$keys.", Slug:".$footBallFixturePushAll->slug);
+//                    }
                 }
             }
             //更新数据
@@ -625,11 +625,12 @@ class RobotPushService extends BaseService
                        }else{
                            $params['level']=2;
                        }
-                       Log::info("再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
+                       //Log::info("再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
                        if($referral_code){
                            $this->httpWorkerman->post($this->pushUserUrl, $params);
                        }else{
                            $this->httpWorkerman->post($this->pushUrl, $params);
+                           Log::info("1再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
                        }
                    }
                }
