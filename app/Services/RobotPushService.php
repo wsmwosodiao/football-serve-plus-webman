@@ -456,9 +456,8 @@ class RobotPushService extends BaseService
     {
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
-            ->where('slug',$slug)
             ->where('date', '<', Carbon::now())//开始时间
-            ->where('is_push_user', false)->first();
+            ->where('slug',$slug)->first();
 
         if($footBallFixturePushAll){
             $list = ShotGame::query()->where('game_over', true)->orderByDesc('round')->take(20)->get();
@@ -481,9 +480,7 @@ class RobotPushService extends BaseService
                 $slug="FOOTN";
                 $footBallFixturePushAll=FootBallFixturePushAll::query()
                     ->where('is_push', true)
-                    ->where('slug',$slug)
-                    ->where('date', '<', Carbon::now())//开始时间
-                    ->where('is_push_user', false)->first();
+                    ->where('slug',$slug)->first();
             }
 
             if( $count >2){
