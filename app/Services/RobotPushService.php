@@ -622,7 +622,7 @@ class RobotPushService extends BaseService
                        }else{
                            $params['level']=2;
                        }
-
+                       Log::info("再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
                        if($referral_code){
                            $this->httpWorkerman->post($this->pushUserUrl, $params);
                        }else{
