@@ -471,7 +471,8 @@ class RobotPushService extends BaseService
             /** @var ShotGame $item */
             foreach ($list as $item) {
                 if ($result == $item->shot_result) {
-                    $round.=$item->round.'\n';
+                    $round.=$item->round.'
+                    ';
                     $count++;
                 } else {
                     break;
