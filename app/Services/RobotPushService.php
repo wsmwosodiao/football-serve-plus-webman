@@ -466,10 +466,12 @@ class RobotPushService extends BaseService
             //结果类型 y进球 n未进球
             $result = $last->shot_result;
             //连续次数
+            $round="";
             $count = 0;
             /** @var ShotGame $item */
             foreach ($list as $item) {
                 if ($result == $item->shot_result) {
+                    $round.=$item->round.'\n';
                     $count++;
                 } else {
                     break;
@@ -484,7 +486,7 @@ class RobotPushService extends BaseService
             }
 
             if( $count >2  && $footBallFixturePushAll){
-                $this->pushMacthTimingSend($footBallFixturePushAll,0,$count);
+                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round);
                 Log::info("自定义推送任务Slug：".$slug);
             }
 
