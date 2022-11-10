@@ -592,6 +592,7 @@ class RobotPushService extends BaseService
                 $contents=str_replace("{order_sn}",$key,$contents);
                 $contents=str_replace("{commission}",$key,$contents);
                 $contents=str_replace("{count}",$key,$contents);
+                $contents=str_replace('\\n','\n',$contents);
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
                     "language"=>(string)$language,
@@ -632,7 +633,7 @@ class RobotPushService extends BaseService
                            $this->httpWorkerman->post($this->pushUserUrl, $params);
                        }else{
                            $this->httpWorkerman->post($this->pushUrl, $params);
-                           Log::info("1再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
+                          // Log::info("1再次推送推送任务Slug：".$footBallFixturePushAll->slug,["params"=>$params]);
                        }
                    }
                }
