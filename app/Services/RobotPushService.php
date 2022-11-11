@@ -630,10 +630,10 @@ class RobotPushService extends BaseService
                     $contents = str_replace("{order_sn}", $key, $contents);
                     $contents = str_replace("{commission}", $key, $contents);
                     $contents = str_replace("{count}", $key, $contents);
-                    $contents = str_replace('\\n', '\n', $contents);
-                    $contents = str_replace("                    ", '', $contents);
-                    $contents = str_replace("                   ", '', $contents);
                 }
+                $contents = str_replace('\\n', '\n', $contents);
+                $contents = str_replace("                    ", '', $contents);
+                $contents = str_replace("                   ", '', $contents);
 
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
