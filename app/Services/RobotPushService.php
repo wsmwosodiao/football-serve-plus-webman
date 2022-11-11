@@ -601,6 +601,7 @@ class RobotPushService extends BaseService
                     'created_at' => Carbon::now()
                 ]);
                 if($footBalAfterImgPush){
+                    Log::info('添加数据');
                     $post_yun['id'] = $footBalAfterImgPush->getKey();
                     $post_yun['type'] = 1;
                     $post_yun['lang'] = $language;
