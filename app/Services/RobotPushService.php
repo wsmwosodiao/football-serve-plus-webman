@@ -712,6 +712,7 @@ class RobotPushService extends BaseService
                     ]),
                     'is_send' => false,
                     'slug' => $footBallFixturePushAll->slug,
+                    'type' => str_contains($footBallFixturePushAll->slug,'META')?2:1,
                     'lang' => $language,
                     'created_at' => Carbon::now()
                 ]);
