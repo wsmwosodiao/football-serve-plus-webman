@@ -679,9 +679,10 @@ class RobotPushService extends BaseService
             }
             $img=data_get($vinfo, "icon","");
             if($img||$wait){
-                $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img==null?'':$img;
                 if($wait){
                     $img=$after_img;
+                }else{
+                    $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
                 }
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
