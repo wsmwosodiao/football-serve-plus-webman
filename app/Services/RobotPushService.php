@@ -643,6 +643,7 @@ class RobotPushService extends BaseService
                     "text"=>$contents,
                     "delay"=>$delay,
                 ];
+                Log::info('param',$params);
                 if($footBallFixturePushAll->country){
                     $params['country']=$footBallFixturePushAll->country;
                 }
