@@ -570,6 +570,37 @@ class RobotPushService extends BaseService
         }
     }
 
+    public function pushMetaGameEndSend($slug ='META4')
+    {
+        $footBallFixturePushAll=FootBallFixturePushAll::query()
+            ->where('is_push', true)
+            ->where('date', '<', Carbon::now())//开始时间
+            ->where('slug',$slug)->first();
+
+        if($footBallFixturePushAll){
+            /** @var MetaFootballGame $last */
+            $last = MetaFootballGame::query()->where('game_over', true)->orderByDesc('end_time')->first();
+            /** @var GameCrontab $game */
+            $game = GameCrontab::query()->first();
+            if(!$game){
+                $game = GameCrontab::query()->create(['meta_round'=>'1','shot_round'=>'1']);
+            }
+            if($game->meta_end_round==$last->round){
+                return;
+            }
+            $game->meta_end_round=$last->round;
+            $game->save();
+
+            //连续次数
+            $round= $last->game_score;
+            $count = $last->home_team_name.' VS '.$last->away_team_name;
+
+            $map = ['num'=>$count,'number_info'=>$round];
+            $this->pushMacthTimingSend($footBallFixturePushAll,0,$round,$map,1);
+            Log::info("自定义推送任务Slug：".$slug);
+        }
+    }
+
     public function getMetaResult(int $a,int $b){
         if($a==$b){
             return 0;

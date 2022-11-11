@@ -84,6 +84,11 @@ class Task
             RobotPushService::make()->pushMetaGameSend();
             echo "元宇宙推送：".date('Y-m-d H:i:s')."\n";
         });
+        // 每分钟执行一次
+        new Crontab('18 */1 * * * *', function(){
+            RobotPushService::make()->pushMetaGameEndSend();
+            echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
+        });
 
     }
 

@@ -9,6 +9,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $_id 主键
  * @property string $shot_round 射击游戏上次执行场次
  * @property string $meta_round 元宇宙上次执行场次
+ * @property string $meta_end_round 元宇宙结果上次执行场次
  */
 class GameCrontab extends Model
 {
