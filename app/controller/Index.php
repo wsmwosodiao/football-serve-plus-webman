@@ -29,7 +29,7 @@ class Index
         if ($footBallAfterImgPush) {
             $d = new FootBallFixturePushAll(data_get($post_data, 'footBallFixturePushAll'));
             Log::info('FootBallFixturePushAll',[$d]);
-            RobotPushService::make()->pushSend($d, data_get($post_data, 'content'), data_get($post_data, 'language'), data_get($post_data, 'key'), data_get($post_data, 'referral_code'), true, $url);
+            RobotPushService::make()->pushSend($d, data_get($post_data, 'content'), data_get($post_data, 'language'), data_get($post_data, 'key'), data_get($post_data, 'referral_code'),data_get($post_data,'map'), true, $url);
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
             $footBallAfterImgPush->save();

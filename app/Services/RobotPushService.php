@@ -488,7 +488,8 @@ class RobotPushService extends BaseService
             }
 
             if( $count >2  && $footBallFixturePushAll){
-                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round);
+                $map = ['num'=>$count,'number_info'=>$round];
+                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round,$map);
                 Log::info("自定义推送任务Slug：".$slug);
             }
 
@@ -507,7 +508,7 @@ class RobotPushService extends BaseService
 
     }
 
-    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys=""): bool
+    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys="",$map = []): bool
     {
         try {
             $langList = Language::query()->pluck('id','slug')->toArray();
@@ -590,7 +591,7 @@ class RobotPushService extends BaseService
 
 
     //wait默认false等待图片生成
-    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$wait = false,$after_img = '')
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = false,$after_img = '')
     {
         $count=1;
         foreach ($content as $vinfo){
@@ -601,7 +602,8 @@ class RobotPushService extends BaseService
                         'content' => $content,
                         'language' => $language,
                         'key' => $key,
-                        'referral_code' => $referral_code
+                        'referral_code' => $referral_code,
+                        'map' => $map
                     ],
                     'is_send' => false,
                     'created_at' => Carbon::now()
@@ -622,14 +624,18 @@ class RobotPushService extends BaseService
             $contents=data_get($vinfo, "contents","");
 
             if($contents){
-                $contents=str_replace("{red}",$key,$contents);
-                $contents=str_replace("{order_sn}",$key,$contents);
-                $contents=str_replace("{commission}",$key,$contents);
-                $contents=str_replace("{count}",$key,$contents);
-                $contents=str_replace('\\n','\n',$contents);
-                $contents=str_replace("                    ",'',$contents);
-                $contents=str_replace("                   ",'',$contents);
-
+                if($wait){
+                    $contents = str_replace("{num}", data_get($map,'num'), $contents);
+                    $contents = str_replace("{number_info}", data_get($map,'number_info'), $contents);
+                }else {
+                    $contents = str_replace("{red}", $key, $contents);
+                    $contents = str_replace("{order_sn}", $key, $contents);
+                    $contents = str_replace("{commission}", $key, $contents);
+                    $contents = str_replace("{count}", $key, $contents);
+                    $contents = str_replace('\\n', '\n', $contents);
+                    $contents = str_replace("                    ", '', $contents);
+                    $contents = str_replace("                   ", '', $contents);
+                }
 
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
