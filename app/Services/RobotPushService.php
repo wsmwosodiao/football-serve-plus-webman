@@ -596,6 +596,7 @@ class RobotPushService extends BaseService
         $count=1;
         foreach ($content as $vinfo){
             if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
+                Log::info('save_befrom',[$footBallFixturePushAll]);
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
                     'post_data' => [
                         'footBallFixturePushAll' => $footBallFixturePushAll,
