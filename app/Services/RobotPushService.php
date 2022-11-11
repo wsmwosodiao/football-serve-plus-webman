@@ -515,7 +515,7 @@ class RobotPushService extends BaseService
             foreach ($langList as $key=>$value){
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
-                    $this->pushSend($footBallFixturePushAll,$text,$key,$keys,$map);
+                    $this->pushSend($footBallFixturePushAll,$text,$key,$keys,'',$map);
 //                    if($keys){
 //                        Log::info("推送值：".$keys.", Slug:".$footBallFixturePushAll->slug);
 //                    }
