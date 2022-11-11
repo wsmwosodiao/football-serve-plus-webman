@@ -28,10 +28,11 @@ class Index
         $footBallAfterImgPush = FootBallAfterImgPush::query()->where('_id', $id)->first();
         $post_data = data_get($footBallAfterImgPush, 'post_data');
         if ($footBallAfterImgPush) {
-            $d = data_get(json_decode($post_data,true),'footBallFixturePushAll');
+            $ob = json_decode($post_data,true);
+            $d = data_get($ob,'footBallFixturePushAll');
             $footBallFixturePushAll = FootBallFixturePushAll::query()->where('_id',$d)->first();
             Log::info('save_after',[$footBallFixturePushAll]);
-            RobotPushService::make()->pushSend($footBallFixturePushAll, data_get($post_data, 'content'), data_get($post_data, 'language'), data_get($post_data, 'key'), data_get($post_data, 'referral_code'),data_get($post_data,'map'), true, $url);
+            RobotPushService::make()->pushSend($footBallFixturePushAll, data_get($ob, 'content'), data_get($ob, 'language'), data_get($ob, 'key'), data_get($ob, 'referral_code'),data_get($ob,'map'), true, $url);
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
             $footBallAfterImgPush->save();
