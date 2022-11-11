@@ -523,7 +523,7 @@ class RobotPushService extends BaseService
             }
             $game->meta_round=$last->round;
             $game->save();
-            //结果类型 y进球 n未进球
+
             $result = $this->getMetaResult($last->home_team_score,$last->away_team_score);
             //连续次数
             $round="";
@@ -537,18 +537,6 @@ class RobotPushService extends BaseService
                 } else {
                     break;
                 }
-            }
-
-            if($result == '1' && $count >2){
-                $slug="META1";
-                $footBallFixturePushAll=FootBallFixturePushAll::query()
-                    ->where('is_push', true)
-                    ->where('slug',$slug)->first();
-            }elseif($result == '2' && $count >2){
-                $slug="META2";
-                $footBallFixturePushAll=FootBallFixturePushAll::query()
-                    ->where('is_push', true)
-                    ->where('slug',$slug)->first();
             }
 
             if( $count >2){
