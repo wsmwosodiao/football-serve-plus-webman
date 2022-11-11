@@ -28,7 +28,7 @@ class Index
         $footBallAfterImgPush = FootBallAfterImgPush::query()->where('_id',$id)->first();
         $post_data = data_get($footBallAfterImgPush,'post_data');
         if($footBallAfterImgPush) {
-            Log::info('$footBallAfterImgPush',[$footBallAfterImgPush]);
+            Log::info('$post_data',[$post_data]);
             RobotPushService::make()->pushSend(data_get($post_data,'footBallFixturePushAll'),data_get($post_data,'content'),data_get($post_data,'language'),data_get($post_data,'key'),data_get($post_data,'referral_code'),true,$url);
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
