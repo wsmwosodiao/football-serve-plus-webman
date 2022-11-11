@@ -623,7 +623,7 @@ class RobotPushService extends BaseService
             $count++;
             $delay=$footBallFixturePushAll->sleep_second * $count;
             $contents=data_get($vinfo, "contents","");
-
+            Log::info('wsm',[$footBallFixturePushAll]);
             if($contents){
                 if($wait){
                     $contents = str_replace("{num}", data_get($map,'num'), $contents);
