@@ -649,8 +649,9 @@ class RobotPushService extends BaseService
                 if($referral_code){
                     $params['referral_code']=$referral_code;
                 }
-
+                Log::info(' 1');
                 if($this->is_push){
+                    Log::info(' 2');
                     if($referral_code){
                         $this->httpWorkerman->post($this->pushUserUrl, $params);
                     }else{
@@ -702,8 +703,9 @@ class RobotPushService extends BaseService
                 if($referral_code){
                     $params['referral_code']=$referral_code;
                 }
-
+                Log::info(' 3');
                 if($this->is_push){
+                    Log::info(' 4');
                     if($referral_code){
                         $this->httpWorkerman->post($this->pushUserUrl, $params);
                     }else{
