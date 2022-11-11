@@ -596,7 +596,13 @@ class RobotPushService extends BaseService
         foreach ($content as $vinfo){
             if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
-                    'post_data' => [],
+                    'post_data' => [
+                        'footBallFixturePushAll' => $footBallFixturePushAll,
+                        'content' => $content,
+                        'language' => $language,
+                        'key' => $key,
+                        'referral_code' => $referral_code
+                    ],
                     'is_send' => false,
                     'created_at' => Carbon::now()
                 ]);
