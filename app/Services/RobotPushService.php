@@ -711,6 +711,8 @@ class RobotPushService extends BaseService
                         'map' => $map
                     ]),
                     'is_send' => false,
+                    'slug' => $footBallFixturePushAll->slug,
+                    'lang' => $language,
                     'created_at' => Carbon::now()
                 ]);
                 if($footBalAfterImgPush){
