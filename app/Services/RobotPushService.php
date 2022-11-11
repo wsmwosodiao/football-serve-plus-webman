@@ -591,7 +591,7 @@ class RobotPushService extends BaseService
 
 
     //wait默认false等待图片生成
-    public function pushSend($footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = false,$after_img = '')
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = false,$after_img = '')
     {
         $count=1;
         foreach ($content as $vinfo){
@@ -599,7 +599,7 @@ class RobotPushService extends BaseService
                 Log::info('save_befrom',[$footBallFixturePushAll]);
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
                     'post_data' => json_encode([
-                        'footBallFixturePushAll' => $footBallFixturePushAll,
+                        'footBallFixturePushAll' => $footBallFixturePushAll->getKey(),
                         'content' => $content,
                         'language' => $language,
                         'key' => $key,
