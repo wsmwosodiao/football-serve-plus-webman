@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App;
 
+use App\model\Game\GameCrontab;
+use App\model\Game\MetaFootballGame;
 use App\model\Language;
 use App\model\Notification;
 use App\model\RedPacket;
@@ -489,7 +491,7 @@ class RobotPushService extends BaseService
 
             if( $count >2  && $footBallFixturePushAll){
                 $map = ['num'=>$count,'number_info'=>$round];
-                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round,$map);
+                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round,$map,1);
                 Log::info("自定义推送任务Slug：".$slug);
             }
 
@@ -499,23 +501,95 @@ class RobotPushService extends BaseService
 
     }
 
-    /**生成图片后再发送
-     * @param $slug
-     * @return void
-     */
-    public function pushMacthSlugAfterImg($slug ='FOOTY')
-    {
 
+    public function pushMetaGameSend($slug ='META0')
+    {
+        $footBallFixturePushAll=FootBallFixturePushAll::query()
+            ->where('is_push', true)
+            ->where('date', '<', Carbon::now())//开始时间
+            ->where('slug',$slug)->first();
+
+        if($footBallFixturePushAll){
+            $list = MetaFootballGame::query()->where('game_over', true)->orderByDesc('end_time')->take(20)->get();
+            /** @var MetaFootballGame $last */
+            $last = $list->first();
+            /** @var GameCrontab $game */
+            $game = GameCrontab::query()->first();
+            if(!$game){
+                $game = GameCrontab::query()->create(['meta_round'=>'1','shot_round'=>'1']);
+            }
+            if($game->meta_round==$last->round){
+                return;
+            }
+            $game->meta_round=$last->round;
+            $game->save();
+            //结果类型 y进球 n未进球
+            $result = $this->getMetaResult($last->home_team_score,$last->away_team_score);
+            //连续次数
+            $round="";
+            $count = 0;
+            /** @var MetaFootballGame $item */
+            foreach ($list as $item) {
+                if ($result == $this->getMetaResult($item->home_team_score,$item->away_team_score)) {
+                    $round.=$item->round.'
+                    ';
+                    $count++;
+                } else {
+                    break;
+                }
+            }
+
+            if($result == '1' && $count >2){
+                $slug="META1";
+                $footBallFixturePushAll=FootBallFixturePushAll::query()
+                    ->where('is_push', true)
+                    ->where('slug',$slug)->first();
+            }elseif($result == '2' && $count >2){
+                $slug="META2";
+                $footBallFixturePushAll=FootBallFixturePushAll::query()
+                    ->where('is_push', true)
+                    ->where('slug',$slug)->first();
+            }
+
+            if( $count >2){
+                if($result!='0') {
+                    if ($result == '1') {
+                        $slug = "META1";
+                    } elseif ($result == '2') {
+                        $slug = "META2";
+                    }
+                    $footBallFixturePushAll = FootBallFixturePushAll::query()
+                        ->where('is_push', true)
+                        ->where('slug', $slug)->first();
+                }
+                $map = ['num'=>$count,'number_info'=>$round];
+                $this->pushMacthTimingSend($footBallFixturePushAll,0,$round,$map,1);
+                Log::info("自定义推送任务Slug：".$slug);
+            }
+
+        }
     }
 
-    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys="",$map = []): bool
+    public function getMetaResult(int $a,int $b){
+        if($a==$b){
+            return 0;
+        }else{
+            if($a>$b){
+                return 1;
+            }else{
+                return 2;
+            }
+        }
+    }
+
+    public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys="",$map = [],$waiter=0): bool
     {
         try {
             $langList = Language::query()->pluck('id','slug')->toArray();
             foreach ($langList as $key=>$value){
                 $text=data_get($footBallFixturePushAll, "config_".$key,"");
                 if($text){
-                    $this->pushSend($footBallFixturePushAll,$text,$key,$keys,'',$map);
+                    $this->pushSend($footBallFixturePushAll,$text,$key,$keys,'',$map,$waiter);
 //                    if($keys){
 //                        Log::info("推送值：".$keys.", Slug:".$footBallFixturePushAll->slug);
 //                    }
@@ -590,12 +664,12 @@ class RobotPushService extends BaseService
 
 
 
-    //wait默认false等待图片生成
-    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = false,$after_img = '')
+    //wait 0正常逻辑，1等待图片生成，2图片已生成
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = 0,$after_img = '')
     {
         $count=1;
         foreach ($content as $vinfo){
-            if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
+            if($wait==1) {
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
                     'post_data' => json_encode([
                         'footBallFixturePushAll' => $footBallFixturePushAll->getKey(),
@@ -682,8 +756,8 @@ class RobotPushService extends BaseService
 
             }
             $img=data_get($vinfo, "icon","");
-            if($img||$wait){
-                if($wait){
+            if($img||$wait==2){
+                if($wait==2){
                     $img=$after_img;
                 }else{
                     $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
