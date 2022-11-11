@@ -611,6 +611,7 @@ class RobotPushService extends BaseService
                     $post_yun['id'] = $footBalAfterImgPush->getKey();
                     $post_yun['type'] = 1;
                     $post_yun['lang'] = $language;
+                    $this->httpWorkerman->get('http://172.28.237.28', $post_yun);
                 }else{
                     Log::error('加入等待失败');
                 }
