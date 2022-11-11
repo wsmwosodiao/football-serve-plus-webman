@@ -15,4 +15,8 @@ class Index
         return response('hello webman');
     }
 
+    public function aftersend(Request $request)
+    {
+        return response('hello webman');
+    }
 }

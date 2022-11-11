@@ -8,6 +8,7 @@ use App\model\Language;
 use App\model\Notification;
 use App\model\RedPacket;
 use App\model\RobotPushLog;
+use App\model\Sport\FootBallAfterImgPush;
 use App\model\Sport\FootBallFixture;
 use App\model\Sport\FootBallFixturePush;
 use App\model\Sport\FootBallFixturePushAll;
@@ -497,6 +498,15 @@ class RobotPushService extends BaseService
 
     }
 
+    /**生成图片后再发送
+     * @param $slug
+     * @return void
+     */
+    public function pushMacthSlugAfterImg($slug ='FOOTY')
+    {
+
+    }
+
     public function pushMacthTimingSend(FootBallFixturePushAll $footBallFixturePushAll,$is_myself=0,$keys=""): bool
     {
         try {
@@ -579,11 +589,27 @@ class RobotPushService extends BaseService
 
 
 
-
-    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="")
+    //wait默认false等待图片生成
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$wait = false)
     {
         $count=1;
         foreach ($content as $vinfo){
+            if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
+                $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
+                    'post_data' => [],
+                    'is_send' => false,
+                    'created_at' => Carbon::now()
+                ]);
+                if($footBalAfterImgPush){
+                    $post_yun['id'] = $footBalAfterImgPush->getKey();
+                    $post_yun['type'] = 1;
+                    $post_yun['lang'] = $language;
+                    $post_yun['url'] = 'http://172.28.237.29/aftersend';
+                }else{
+                    Log::error('加入等待失败');
+                }
+                continue;
+            }
             $count++;
             $delay=$footBallFixturePushAll->sleep_second * $count;
             $contents=data_get($vinfo, "contents","");
