@@ -679,7 +679,7 @@ class RobotPushService extends BaseService
 
             }
             $img=data_get($vinfo, "icon","");
-            if($img||$$wait){
+            if($img||$wait){
                 $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
                 if($wait){
                     $img=$after_img;
