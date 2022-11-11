@@ -591,7 +591,7 @@ class RobotPushService extends BaseService
             $game->meta_end_round=$last->round;
             $game->save();
 
-            //连续次数
+
             $round= $last->game_score;
             $count = $last->home_team_name.' VS '.$last->away_team_name;
 
@@ -715,7 +715,7 @@ class RobotPushService extends BaseService
                 ]);
                 if($footBalAfterImgPush){
                     $post_yun['id'] = $footBalAfterImgPush->getKey();
-                    $post_yun['type'] = 1;
+                    $post_yun['type'] = str_contains($footBallFixturePushAll->slug,'META')?2:1;
                     $post_yun['lang'] = $language;
                     $this->httpWorkerman->post('http://172.28.237.28/api/game_card', $post_yun);
                 }else{
