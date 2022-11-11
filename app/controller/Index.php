@@ -29,7 +29,7 @@ class Index
         $post_data = data_get($footBallAfterImgPush,'post_data');
         if($footBallAfterImgPush) {
             Log::info('$footBallAfterImgPush',[$footBallAfterImgPush]);
-            RobotPushService::make()->pushSend($post_data->footBallFixturePushAll,$post_data->content,$post_data->language,$post_data->key,$post_data->referral_code,true,$url);
+            RobotPushService::make()->pushSend(data_get($post_data,'footBallFixturePushAll'),data_get($post_data,'content'),data_get($post_data,'language'),data_get($post_data,'key'),data_get($post_data,'referral_code'),true,$url);
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
             $footBallAfterImgPush->save();
