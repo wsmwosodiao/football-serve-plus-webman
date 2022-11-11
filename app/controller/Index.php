@@ -6,6 +6,7 @@ use App\model\Sport\FootBallAfterImgPush;
 use App\model\Sport\FootBallFixturePushAll;
 use App\Services\RobotPushService;
 use Carbon\Carbon;
+use support\Log;
 use support\Request;
 use Webman\RedisQueue\Client;
 
@@ -21,6 +22,7 @@ class Index
 
     public function aftersend(Request $request)
     {
+        Log::info('yuncallback',[$request]);
         $id = $request->input('id');
         $url = $request->input('url');
         $footBallAfterImgPush = FootBallAfterImgPush::query()->where('_id',$id)->first();
