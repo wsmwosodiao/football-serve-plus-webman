@@ -33,6 +33,8 @@ class Index
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
             $footBallAfterImgPush->save();
+        }else{
+            Log::error('no id',[$request]);
         }
         return response('success');
     }
