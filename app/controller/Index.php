@@ -22,6 +22,7 @@ class Index
 
     public function aftersend(Request $request)
     {
+        Log::info('info',$request->all());
         $id = $request->input('id');
         $url = $request->input('url');
         $footBallAfterImgPush = FootBallAfterImgPush::query()->where('_id', $id)->first();
