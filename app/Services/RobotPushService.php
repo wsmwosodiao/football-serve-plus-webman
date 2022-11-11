@@ -590,7 +590,7 @@ class RobotPushService extends BaseService
 
 
     //wait默认false等待图片生成
-    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$wait = false)
+    public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$wait = false,$after_img = '')
     {
         $count=1;
         foreach ($content as $vinfo){
@@ -611,7 +611,6 @@ class RobotPushService extends BaseService
                     $post_yun['id'] = $footBalAfterImgPush->getKey();
                     $post_yun['type'] = 1;
                     $post_yun['lang'] = $language;
-                    $post_yun['url'] = 'http://172.28.237.29/aftersend';
                 }else{
                     Log::error('加入等待失败');
                 }
@@ -679,8 +678,11 @@ class RobotPushService extends BaseService
 
             }
             $img=data_get($vinfo, "icon","");
-            if($img){
+            if($img||$$wait){
                 $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
+                if($wait){
+                    $img=$after_img;
+                }
                 $params=[
                     "level"=>$footBallFixturePushAll->type,
                     "delay"=>$delay-3,
