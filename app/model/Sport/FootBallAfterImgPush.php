@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
  * 保存推送数据，等待图片生成之后发送
- * @property array $post_data 发送的数据
+ * @property string $post_data 发送的数据
  * @property boolean $is_send 是否推送
  * @property string $created_at 创建时间
  * @property string $send_at 发送时间

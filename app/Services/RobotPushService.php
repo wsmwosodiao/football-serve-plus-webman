@@ -598,14 +598,14 @@ class RobotPushService extends BaseService
             if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
                 Log::info('save_befrom',[$footBallFixturePushAll]);
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
-                    'post_data' => [
+                    'post_data' => json_encode([
                         'footBallFixturePushAll' => $footBallFixturePushAll,
                         'content' => $content,
                         'language' => $language,
                         'key' => $key,
                         'referral_code' => $referral_code,
                         'map' => $map
-                    ],
+                    ]),
                     'is_send' => false,
                     'created_at' => Carbon::now()
                 ]);
