@@ -596,7 +596,6 @@ class RobotPushService extends BaseService
         $count=1;
         foreach ($content as $vinfo){
             if(!$wait&&($footBallFixturePushAll->slug == 'FOOTY' || $footBallFixturePushAll->slug == 'FOOTN')) {
-                Log::info('save_befrom',[$footBallFixturePushAll]);
                 $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
                     'post_data' => json_encode([
                         'footBallFixturePushAll' => $footBallFixturePushAll->getKey(),
@@ -610,7 +609,6 @@ class RobotPushService extends BaseService
                     'created_at' => Carbon::now()
                 ]);
                 if($footBalAfterImgPush){
-                    Log::info('添加数据');
                     $post_yun['id'] = $footBalAfterImgPush->getKey();
                     $post_yun['type'] = 1;
                     $post_yun['lang'] = $language;
@@ -623,7 +621,6 @@ class RobotPushService extends BaseService
             $count++;
             $delay=$footBallFixturePushAll->sleep_second * $count;
             $contents=data_get($vinfo, "contents","");
-            Log::info('wsm',[$footBallFixturePushAll]);
             if($contents){
                 if($wait){
                     $contents = str_replace("{num}", data_get($map,'num'), $contents);
@@ -644,7 +641,6 @@ class RobotPushService extends BaseService
                     "text"=>$contents,
                     "delay"=>$delay,
                 ];
-                Log::info('param',$params);
                 if($footBallFixturePushAll->country){
                     $params['country']=$footBallFixturePushAll->country;
                 }
