@@ -31,7 +31,7 @@ class Index
             $ob = json_decode($post_data,true);
             $d = data_get($ob,'footBallFixturePushAll');
             $footBallFixturePushAll = FootBallFixturePushAll::query()->where('_id',$d)->first();
-            Log::info('save_after',[$footBallFixturePushAll]);
+            Log::info('$ob',$ob);
             RobotPushService::make()->pushSend($footBallFixturePushAll, data_get($ob, 'content'), data_get($ob, 'language'), data_get($ob, 'key'), data_get($ob, 'referral_code'),data_get($ob,'map'), true, $url);
             $footBallAfterImgPush->is_send = true;
             $footBallAfterImgPush->send_at = Carbon::now();
