@@ -588,7 +588,7 @@ class RobotPushService extends BaseService
             Log::info("自定义推送任务Slug：".$slug);
         }
     }
-    public function pushDepositSend($slug ='')
+    public function pushDepositSend($slug ='GROUP1')
     {
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
@@ -598,10 +598,17 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll){
             /** @var GameCrontab $game */
             $game = GameCrontab::query()->first();
+            if($game->group_type==null){
+                $game->group_type='GROUP1';
+                $game->save();
+            }
+            $slug=$game->group_type;
             if($slug=='GROUP1'){
                 $timediff = abs(Carbon::now()- $game->group1);
+                $game->group_type='GROUP2';
             }else{
                 $timediff = abs(Carbon::now()- $game->group2);
+                $game->group_type='GROUP1';
             }
             //计算小时数
             $remain = $timediff % 86400;
