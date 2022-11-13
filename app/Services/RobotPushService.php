@@ -588,23 +588,18 @@ class RobotPushService extends BaseService
             Log::info("自定义推送任务Slug：".$slug);
         }
     }
-    public function pushDepositSend($slug ='GROUP1')
+    public function pushDepositSend()
     {
         $game = GameCrontab::query()->first();
-        if($game->group_type==null){
-            $game->group_type='GROUP1';
-            $game->save();
-        }
-        $slug=$game->group_type;
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
             ->where('date', '<', Carbon::now())//开始时间
-            ->where('slug',$slug)->first();
+            ->where('slug',$game->group_type)->first();
 
         if($footBallFixturePushAll){
             /** @var GameCrontab $game */
 
-            if($slug=='GROUP1'){
+            if($game->group_type=='GROUP1'){
                 $timediff = abs(Carbon::now()- $game->group1);
                 $game->group_type='GROUP2';
             }else{
@@ -618,14 +613,14 @@ class RobotPushService extends BaseService
             if($hours<20){
                 return;
             }
-            if($slug=='GROUP1'){
+            if($game->group_type=='GROUP1'){
                 $game->group1=Carbon::now();
             }else{
                 $game->group2=Carbon::now();
             }
             $game->save();
             $this->pushMacthTimingSend($footBallFixturePushAll);
-            Log::info("自定义推送任务Slug：".$slug);
+            Log::info("自定义推送任务Slug：".$game->group_type);
         }
         else{
             Log::info('为什么不执行');
