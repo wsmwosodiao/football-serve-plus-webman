@@ -588,7 +588,7 @@ class RobotPushService extends BaseService
             Log::info("自定义推送任务Slug：".$slug);
         }
     }
-    public function pushDeposit($slug ='')
+    public function pushDepositSend($slug ='')
     {
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
@@ -606,6 +606,7 @@ class RobotPushService extends BaseService
             //计算小时数
             $remain = $timediff % 86400;
             $hours = intval($remain / 3600);
+            Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
             if($hours<20){
                 return;
             }
