@@ -627,6 +627,9 @@ class RobotPushService extends BaseService
             $this->pushMacthTimingSend($footBallFixturePushAll);
             Log::info("自定义推送任务Slug：".$slug);
         }
+        else{
+            Log::info('为什么不执行');
+        }
     }
     public function getMetaResult(int $a,int $b){
         if($a==$b){
