@@ -591,6 +591,7 @@ class RobotPushService extends BaseService
     public function pushDepositSend()
     {
         $game = GameCrontab::query()->first();
+        Log::info('game',[$game]);
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
             ->where('date', '<', Carbon::now())//开始时间
