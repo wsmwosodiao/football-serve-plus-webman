@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use mysql_xdevapi\Exception;
 use support\Log;
 use Workerman\Http\Client;
 use Workerman\Worker;
@@ -591,40 +592,39 @@ class RobotPushService extends BaseService
     public function pushDepositSend()
     {
         $game = GameCrontab::query()->first();
-        Log::info('game',[$game]);
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
             ->where('date', '<', Carbon::now())//开始时间
             ->where('slug',$game->group_type)->first();
+        try {
+            if($footBallFixturePushAll){
+                /** @var GameCrontab $game */
 
-        if($footBallFixturePushAll){
-            /** @var GameCrontab $game */
-
-            if($game->group_type=='GROUP1'){
-                $timediff = abs(Carbon::now()- $game->group1);
-                $game->group_type='GROUP2';
-            }else{
-                $timediff = abs(Carbon::now()- $game->group2);
-                $game->group_type='GROUP1';
+                if($game->group_type=='GROUP1'){
+                    $timediff = abs(Carbon::now()- $game->group1);
+                    $game->group_type='GROUP2';
+                }else{
+                    $timediff = abs(Carbon::now()- $game->group2);
+                    $game->group_type='GROUP1';
+                }
+                //计算小时数
+                $remain = $timediff % 86400;
+                $hours = intval($remain / 3600);
+                Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
+                if($hours<20){
+                    return;
+                }
+                if($game->group_type=='GROUP1'){
+                    $game->group1=Carbon::now();
+                }else{
+                    $game->group2=Carbon::now();
+                }
+                $game->save();
+                $this->pushMacthTimingSend($footBallFixturePushAll);
+                Log::info("自定义推送任务Slug：".$game->group_type);
             }
-            //计算小时数
-            $remain = $timediff % 86400;
-            $hours = intval($remain / 3600);
-            Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
-            if($hours<20){
-                return;
-            }
-            if($game->group_type=='GROUP1'){
-                $game->group1=Carbon::now();
-            }else{
-                $game->group2=Carbon::now();
-            }
-            $game->save();
-            $this->pushMacthTimingSend($footBallFixturePushAll);
-            Log::info("自定义推送任务Slug：".$game->group_type);
-        }
-        else{
-            Log::info('为什么不执行');
+        }catch (Exception $e){
+            Log::error($e->getMessage());
         }
     }
     public function getMetaResult(int $a,int $b){
