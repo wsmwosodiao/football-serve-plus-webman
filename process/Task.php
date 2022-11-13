@@ -56,7 +56,7 @@ class Task
 
         // 每1分钟的1秒分钟执行一次【用户站内信】
         new Crontab('1 */2 * * * *', function(){
-            RobotPushUserService::make()->　();
+            RobotPushUserService::make()->pushMacthNotification();
             echo "机器人用户站内信推送：".date('Y-m-d H:i:s')."\n";
         });
 
@@ -93,12 +93,12 @@ class Task
         // 每20分钟执行一次
         new Crontab('* 11/20 * * *', function(){
             RobotPushService::make()->pushDeposit('group1');
-            echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
+            echo "充值推送：".date('Y-m-d H:i:s')."\n";
         });
         // 每20分钟执行一次
         new Crontab('* 1/20 * * *', function(){
             RobotPushService::make()->pushDeposit('group2');
-            echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
+            echo "活动推送：".date('Y-m-d H:i:s')."\n";
         });
     }
 
