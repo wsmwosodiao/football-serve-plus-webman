@@ -599,14 +599,13 @@ class RobotPushService extends BaseService
             ->where('slug',$game->group_type)->first();
         try {
             if($footBallFixturePushAll){
-
-                Log::info('有任务');
                 if($game->group_type=='GROUP1'){
-                    $timediff = abs(Carbon::now()- $game->group1);
+                    Log::info('group1',['now'=>Carbon::now(),'group1'=>$game->group1]);
+                    $timediff = strtotime(Carbon::now()) - strtotime($game->group1);
                     Log::info('$timediff',[$timediff]);
                     $game->group_type='GROUP2';
                 }else{
-                    $timediff = abs(Carbon::now()- $game->group2);
+                    $timediff = strtotime(Carbon::now()) - strtotime($game->group2);
                     $game->group_type='GROUP1';
                 }
                 //计算小时数
@@ -624,8 +623,6 @@ class RobotPushService extends BaseService
                 $game->save();
                 $this->pushMacthTimingSend($footBallFixturePushAll);
                 Log::info("自定义推送任务Slug：".$game->group_type);
-            }else{
-                Log::info('没任务');
             }
         }catch (Exception $e){
             Log::error($e->getMessage());
