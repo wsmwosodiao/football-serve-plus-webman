@@ -596,7 +596,30 @@ class RobotPushService extends BaseService
             ->where('slug',$slug)->first();
 
         if($footBallFixturePushAll){
-
+            /** @var GameCrontab $game */
+            $game = GameCrontab::query()->first();
+            if($game->group1==null||$game->group2==null){
+                $game->group1=Carbon::now();
+                $game->group2=Carbon::now()->addMinutes(10);
+                $game->save();
+            }
+            if($slug=='group1'){
+                $timediff = abs(Carbon::now()- $game->group1);
+            }else{
+                $timediff = abs(Carbon::now()- $game->group2);
+            }
+            //计算小时数
+            $remain = $timediff % 86400;
+            $hours = intval($remain / 3600);
+            if($hours<20){
+                return;
+            }
+            if($slug=='group1'){
+                $game->group1=Carbon::now();
+            }else{
+                $game->group2=Carbon::now();
+            }
+            $game->save();
             $this->pushMacthTimingSend($footBallFixturePushAll);
             Log::info("自定义推送任务Slug：".$slug);
         }

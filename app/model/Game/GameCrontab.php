@@ -17,6 +17,9 @@ class GameCrontab extends Model
     protected $connection = 'mongodb';
     protected $collection = 'game_crontab';
     protected $guarded = [];
-
+    protected $dates = [
+        'group1',
+        'group2',
+    ];
     protected $casts = [];
 }
