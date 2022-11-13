@@ -600,9 +600,7 @@ class RobotPushService extends BaseService
         try {
             if($footBallFixturePushAll){
                 if($game->group_type=='GROUP1'){
-                    Log::info('group1',['now'=>Carbon::now(),'group1'=>$game->group1]);
                     $timediff = strtotime(Carbon::now()) - strtotime($game->group1);
-                    Log::info('$timediff',[$timediff]);
                     $game->group_type='GROUP2';
                 }else{
                     $timediff = strtotime(Carbon::now()) - strtotime($game->group2);
@@ -612,7 +610,7 @@ class RobotPushService extends BaseService
                 $remain = $timediff % 86400;
                 $hours = intval($remain / 3600);
                 Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
-                if($hours<20){
+                if($hours>20){
                     return;
                 }
                 if($game->group_type=='GROUP1'){

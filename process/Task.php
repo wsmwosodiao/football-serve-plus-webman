@@ -90,13 +90,10 @@ class Task
 
         new Crontab('25 */1 * * * *', function(){
             RobotPushService::make()->pushDepositSend();
-            echo "充值推送：".date('Y-m-d H:i:s')."\n";
+            echo "活动和充值推送：".date('Y-m-d H:i:s')."\n";
         });
 
-        new Crontab('30 */1 * * * *', function(){
-            RobotPushService::make()->pushDepositSend();
-            echo "活动推送：".date('Y-m-d H:i:s')."\n";
-        });
+
 
     }
 
