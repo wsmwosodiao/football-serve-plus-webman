@@ -591,6 +591,7 @@ class RobotPushService extends BaseService
     }
     public function pushDepositSend()
     {
+        /** @var GameCrontab $game */
         $game = GameCrontab::query()->first();
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
@@ -598,10 +599,11 @@ class RobotPushService extends BaseService
             ->where('slug',$game->group_type)->first();
         try {
             if($footBallFixturePushAll){
-                /** @var GameCrontab $game */
 
+                Log::info('有任务');
                 if($game->group_type=='GROUP1'){
                     $timediff = abs(Carbon::now()- $game->group1);
+                    Log::info('$timediff',[$timediff]);
                     $game->group_type='GROUP2';
                 }else{
                     $timediff = abs(Carbon::now()- $game->group2);
@@ -622,6 +624,8 @@ class RobotPushService extends BaseService
                 $game->save();
                 $this->pushMacthTimingSend($footBallFixturePushAll);
                 Log::info("自定义推送任务Slug：".$game->group_type);
+            }else{
+                Log::info('没任务');
             }
         }catch (Exception $e){
             Log::error($e->getMessage());
