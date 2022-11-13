@@ -92,12 +92,12 @@ class Task
 //* 10/20 * * *
         // 每20分钟执行一次
         new Crontab('25 */1 * * * *', function(){
-            RobotPushService::make()->pushDepositSend('');
+            RobotPushService::make()->pushDepositSend();
             echo "充值推送：".date('Y-m-d H:i:s')."\n";
         });
         // 每20分钟执行一次
         new Crontab('30 */1 * * * *', function(){
-            RobotPushService::make()->pushDepositSend('');
+            RobotPushService::make()->pushDepositSend();
             echo "活动推送：".date('Y-m-d H:i:s')."\n";
         });
 
