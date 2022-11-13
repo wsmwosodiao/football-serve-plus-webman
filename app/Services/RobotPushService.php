@@ -610,7 +610,7 @@ class RobotPushService extends BaseService
                 $remain = $timediff % 86400;
                 $hours = intval($remain / 60);
                 Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
-                if($hours>20){
+                if($hours<20){
                     return;
                 }
                 if($game->group_type=='GROUP1'){
