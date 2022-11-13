@@ -598,7 +598,7 @@ class RobotPushService extends BaseService
         if($footBallFixturePushAll){
             /** @var GameCrontab $game */
             $game = GameCrontab::query()->first();
-            if($slug=='group1'){
+            if($slug=='GROUP1'){
                 $timediff = abs(Carbon::now()- $game->group1);
             }else{
                 $timediff = abs(Carbon::now()- $game->group2);
@@ -610,7 +610,7 @@ class RobotPushService extends BaseService
             if($hours<20){
                 return;
             }
-            if($slug=='group1'){
+            if($slug=='GROUP1'){
                 $game->group1=Carbon::now();
             }else{
                 $game->group2=Carbon::now();
