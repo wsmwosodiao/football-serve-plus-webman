@@ -78,24 +78,21 @@ class Task
             echo "56进球推送推送：".date('Y-m-d H:i:s')."\n";
         });
 
-//pushMetaGameSend
-        // 每分钟执行一次
         new Crontab('18 */1 * * * *', function(){
             RobotPushService::make()->pushMetaGameSend();
             echo "元宇宙推送：".date('Y-m-d H:i:s')."\n";
         });
-        // 每分钟执行一次
+
         new Crontab('18 */1 * * * *', function(){
             RobotPushService::make()->pushMetaGameEndSend();
             echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
         });
-//* 10/20 * * *
-        // 每20分钟执行一次
+
         new Crontab('25 */1 * * * *', function(){
             RobotPushService::make()->pushDepositSend();
             echo "充值推送：".date('Y-m-d H:i:s')."\n";
         });
-        // 每20分钟执行一次
+
         new Crontab('30 */1 * * * *', function(){
             RobotPushService::make()->pushDepositSend();
             echo "活动推送：".date('Y-m-d H:i:s')."\n";
