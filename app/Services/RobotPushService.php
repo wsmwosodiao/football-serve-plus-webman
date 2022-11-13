@@ -608,7 +608,7 @@ class RobotPushService extends BaseService
                 }
                 //计算小时数
                 $remain = $timediff % 86400;
-                $hours = intval($remain / 3600);
+                $hours = intval($remain / 60);
                 Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
                 if($hours>20){
                     return;
