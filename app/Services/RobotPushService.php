@@ -590,6 +590,12 @@ class RobotPushService extends BaseService
     }
     public function pushDepositSend($slug ='GROUP1')
     {
+        $game = GameCrontab::query()->first();
+        if($game->group_type==null){
+            $game->group_type='GROUP1';
+            $game->save();
+        }
+        $slug=$game->group_type;
         $footBallFixturePushAll=FootBallFixturePushAll::query()
             ->where('is_push', true)
             ->where('date', '<', Carbon::now())//开始时间
@@ -597,12 +603,7 @@ class RobotPushService extends BaseService
 
         if($footBallFixturePushAll){
             /** @var GameCrontab $game */
-            $game = GameCrontab::query()->first();
-            if($game->group_type==null){
-                $game->group_type='GROUP1';
-                $game->save();
-            }
-            $slug=$game->group_type;
+
             if($slug=='GROUP1'){
                 $timediff = abs(Carbon::now()- $game->group1);
                 $game->group_type='GROUP2';
