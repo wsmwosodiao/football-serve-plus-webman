@@ -89,7 +89,17 @@ class Task
             RobotPushService::make()->pushMetaGameEndSend();
             echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
         });
-
+//* 10/20 * * *
+        // 每20分钟执行一次
+        new Crontab('* 11/20 * * *', function(){
+            RobotPushService::make()->pushDeposit('group1');
+            echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
+        });
+        // 每20分钟执行一次
+        new Crontab('* 1/20 * * *', function(){
+            RobotPushService::make()->pushDeposit('group2');
+            echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
+        });
     }
 
 }

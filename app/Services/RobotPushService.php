@@ -588,7 +588,19 @@ class RobotPushService extends BaseService
             Log::info("自定义推送任务Slug：".$slug);
         }
     }
+    public function pushDeposit($slug ='')
+    {
+        $footBallFixturePushAll=FootBallFixturePushAll::query()
+            ->where('is_push', true)
+            ->where('date', '<', Carbon::now())//开始时间
+            ->where('slug',$slug)->first();
 
+        if($footBallFixturePushAll){
+
+            $this->pushMacthTimingSend($footBallFixturePushAll);
+            Log::info("自定义推送任务Slug：".$slug);
+        }
+    }
     public function getMetaResult(int $a,int $b){
         if($a==$b){
             return 0;
