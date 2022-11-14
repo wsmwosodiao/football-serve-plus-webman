@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use support\Log;
 use support\Request;
 use Webman\RedisQueue\Client;
+use WebmanTech\LaravelHttpClient\Facades\Http;
+
 
 class Index
 {

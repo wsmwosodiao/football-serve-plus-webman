@@ -29,7 +29,7 @@ use support\Log;
 use Workerman\Http\Client;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
-use Illuminate\Support\Facades\Http as LHttp;
+use WebmanTech\LaravelHttpClient\Facades\Http as LHttp;
 
 
 class RobotPushService extends BaseService
