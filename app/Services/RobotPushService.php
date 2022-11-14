@@ -729,6 +729,11 @@ class RobotPushService extends BaseService
 
         $imgjson = json_decode($imgjson);
 
+        Log::info("data", [
+            "json" => $imgjson,
+            "lang" => $language,
+        ]);
+
         $people_num = LHttp::get('http://172.19.122.84/api/v1/commonData')->json();
         foreach ($content as $vinfo) {
             if ($wait == 1) {
