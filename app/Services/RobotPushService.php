@@ -726,7 +726,10 @@ class RobotPushService extends BaseService
     {
         $count = 1;
         $imgjson = '{"shot_game":{"CN":6,"EN":7,"TH":8,"VI":9,"ID":10,"PT":11,"KR":12,"MY":13,"ES":14,"JP":16,"TR":17,"RU":18,"IT":19,"FR":20,"AR":21},"meta_game":{"CN":22,"EN":23,"TH":24,"VI":25,"ID":26,"PT":27,"KR":28,"MY":29,"ES":30,"JP":31,"TR":32,"RU":33,"IT":34,"FR":35,"AR":36}}';
-        $people_num = LHttp::get('http://172.19.122.84/api/v1/commonData');
+
+        $imgjson = json_decode($imgjson);
+
+        $people_num = LHttp::get('http://172.19.122.84/api/v1/commonData')->json();
         foreach ($content as $vinfo) {
             if ($wait == 1) {
                 try {
