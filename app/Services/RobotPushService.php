@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use support\Log;
 use Workerman\Http\Client;
+use Workerman\Protocols\Http;
 use Workerman\Worker;
 
 
@@ -726,36 +727,24 @@ class RobotPushService extends BaseService
         $count=1;
         foreach ($content as $vinfo){
             if($wait==1) {
-                $footBalAfterImgPush = FootBallAfterImgPush::query()->Create([
-                    'post_data' => json_encode([
-                        'footBallFixturePushAll' => $footBallFixturePushAll->getKey(),
-                        'content' => $content,
-                        'language' => $language,
-                        'key' => $key,
-                        'referral_code' => $referral_code,
-                        'map' => $map
-                    ]),
-                    'is_send' => false,
-                    'slug' => $footBallFixturePushAll->slug,
-                    'type' => str_contains($footBallFixturePushAll->slug,'META')?2:1,
-                    'lang' => $language,
-                    'created_at' => Carbon::now()
-                ]);
-                if($footBalAfterImgPush){
-                    $post_yun['id'] = $footBalAfterImgPush->getKey();
-                    $post_yun['type'] = str_contains($footBallFixturePushAll->slug,'META')?2:1;
-                    $post_yun['lang'] = $language;
-                    $this->httpWorkerman->post('http://172.28.237.28/api/game_card', $post_yun);
+                $imgjson = '{"shot_game":{"CN":6,"EN":7,"TH":8,"VI":9,"ID":10,"PT":11,"KR":12,"MY":13,"ES":14,"JP":16,"TR":17,"RU":18,"IT":19,"FR":20,"AR":21},"meta_game":{"CN":22,"EN":23,"TH":24,"VI":25,"ID":26,"PT":27,"KR":28,"MY":29,"ES":30,"JP":31,"TR":32,"RU":33,"IT":34,"FR":35,"AR":36}}';
+                $people_num = \Illuminate\Support\Facades\Http::get('http://182.237.0.211/api/v1/commonData');
+                if(str_contains($footBallFixturePushAll->slug,'META')){
+                    $img_id = data_get($imgjson,'meta_game.'.$language);
+                    $num = data_get($people_num,'data.meta_amount');
                 }else{
-                    Log::error('加入等待失败');
+                    $img_id = data_get($imgjson,'shot_game.'.$language);
+                    $num = data_get($people_num,'data.shot_amount');
                 }
-                continue;
+                $tu = \Illuminate\Support\Facades\Http::post('http://172.28.237.28/api/link');
+                $url = data_get($tu,'data.url');
+                $after_img = str_replace('127.0.0.1:5000','8.219.142.190',$url);
             }
             $count++;
             $delay=$footBallFixturePushAll->sleep_second * $count;
             $contents=data_get($vinfo, "contents","");
             if($contents){
-                if($wait==2){
+                if($wait==1){
                     $contents = str_replace("{num}", data_get($map,'num'), $contents);
                     $contents = str_replace("{number_info}", data_get($map,'number_info'), $contents);
                 }else {
@@ -815,8 +804,8 @@ class RobotPushService extends BaseService
 
             }
             $img=data_get($vinfo, "icon","");
-            if($img||$wait==2){
-                if($wait==2){
+            if($img||$wait==1){
+                if($wait==1){
                     $img=$after_img;
                 }else{
                     $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
