@@ -755,7 +755,7 @@ class RobotPushService extends BaseService
                     $tu = LHttp::withHeaders([
                         'token' => 'ApfrIzxCoK1DwNZOEJCwlrnv6QZ0PCdv',
                         'Content-Type' => 'application/json'
-                    ])->post('http://172.28.237.28/api/link', ['text' => $num, 'id' => $img_id]);
+                    ])->post('http://172.28.237.28/api/link', ['text' => (string)$num, 'id' => $img_id]);
                     Log::info('tu', [$tu]);
                     $url = data_get($tu, 'data.url');
                     Log::info('$url', [$url]);
