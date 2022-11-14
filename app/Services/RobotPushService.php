@@ -385,7 +385,7 @@ class RobotPushService extends BaseService
             }
             return true;
         } catch (\Exception $exception) {
-            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            Log::error("pushMacthTimingSendCommission 机器自定义推送错误：" . $exception->getMessage());
             return false;
         }
     }
@@ -448,7 +448,7 @@ class RobotPushService extends BaseService
             }
             return true;
         } catch (\Exception $exception) {
-            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            Log::error("pushMacthTimingSendRed 机器自定义推送错误：" . $exception->getMessage());
             return false;
         }
     }
@@ -661,7 +661,7 @@ class RobotPushService extends BaseService
             }
             return true;
         } catch (\Exception $exception) {
-            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            Log::error("pushMacthTimingSend 机器自定义推送错误：" . $exception->getMessage());
             return false;
         }
     }
@@ -714,7 +714,7 @@ class RobotPushService extends BaseService
             }
             return true;
         } catch (\Exception $exception) {
-            Log::error("机器自定义推送错误：" . $exception->getMessage());
+            Log::error("pushMacthTimingSendNoRecharge 机器自定义推送错误：" . $exception->getMessage());
             return false;
         }
     }
