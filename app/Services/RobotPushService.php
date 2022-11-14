@@ -809,6 +809,7 @@ class RobotPushService extends BaseService
             if($img||$wait==1){
                 if($wait==1){
                     $img=$after_img;
+                    Log::info('after_img'.$after_img);
                 }else{
                     $img="https://yfbyfb.oss-ap-southeast-1.aliyuncs.com/".$img;
                 }
