@@ -726,12 +726,12 @@ class RobotPushService extends BaseService
     public function pushSend(FootBallFixturePushAll $footBallFixturePushAll,$content,$language,$key="",$referral_code="",$map = [],$wait = 0,$after_img = '')
     {
         $count=1;
+        $imgjson = '{"shot_game":{"CN":6,"EN":7,"TH":8,"VI":9,"ID":10,"PT":11,"KR":12,"MY":13,"ES":14,"JP":16,"TR":17,"RU":18,"IT":19,"FR":20,"AR":21},"meta_game":{"CN":22,"EN":23,"TH":24,"VI":25,"ID":26,"PT":27,"KR":28,"MY":29,"ES":30,"JP":31,"TR":32,"RU":33,"IT":34,"FR":35,"AR":36}}';
+        $people_num  = LHttp::get('http://172.19.122.84/api/v1/commonData');
         foreach ($content as $vinfo){
             if($wait==1) {
                 try {
-                    $imgjson = '{"shot_game":{"CN":6,"EN":7,"TH":8,"VI":9,"ID":10,"PT":11,"KR":12,"MY":13,"ES":14,"JP":16,"TR":17,"RU":18,"IT":19,"FR":20,"AR":21},"meta_game":{"CN":22,"EN":23,"TH":24,"VI":25,"ID":26,"PT":27,"KR":28,"MY":29,"ES":30,"JP":31,"TR":32,"RU":33,"IT":34,"FR":35,"AR":36}}';
-                    $people_num  = LHttp::get('http://172.19.122.84/api/v1/commonData');
-                    Log::info('$people_num',[$people_num]);
+
                     if(str_contains($footBallFixturePushAll->slug,'META')){
                         $img_id = data_get($imgjson,'meta_game.'.$language);
                         $num = data_get($people_num,'data.meta_amount');
@@ -741,7 +741,7 @@ class RobotPushService extends BaseService
                     }
                     $tu = LHttp::withHeaders([
                         'token' => 'ApfrIzxCoK1DwNZOEJCwlrnv6QZ0PCdv'
-                    ])->post('http://172.28.237.28/api/link');
+                    ])->post('http://172.28.237.28/api/link',['text'=>$num,'id'=>$img_id]);
                     Log::info('tu',[$tu]);
                     $url = data_get($tu,'data.url');
                     Log::info('$url',[$url]);
