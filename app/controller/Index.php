@@ -10,6 +10,7 @@ use support\Log;
 use support\Request;
 use Webman\RedisQueue\Client;
 use WebmanTech\LaravelHttpClient\Facades\Http;
+use WebmanTech\LaravelHttpClient\Facades\Http as LHttp;
 
 
 class Index
@@ -18,6 +19,11 @@ class Index
     {
         //发送队列 队列名称，数据，延迟时间
         //Client::send("send-message", ['name' => 'webman'], 10);
+
+        $tu = LHttp::withHeaders([
+            'token' => 'ApfrIzxCoK1DwNZOEJCwlrnv6QZ0PCdv',
+            'Content-Type' => 'application/json'
+        ])->post('http://8.219.142.190/api/link',['text'=>"123456",'id'=>6]);
 
         return response('hello webman');
     }
