@@ -610,7 +610,7 @@ class RobotPushService extends BaseService
                 //计算小时数
                 $remain = $timediff % 86400;
                 $hours = intval($remain / 60);
-                Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
+                //Log::info('hour',['hour'=>$hours,'now'=>Carbon::now(),'game'=>$game]);
                 if($hours<10){
                     return;
                 }
@@ -736,7 +736,9 @@ class RobotPushService extends BaseService
                     $img_id = data_get($imgjson,'shot_game.'.$language);
                     $num = data_get($people_num,'data.shot_amount');
                 }
-                $tu = \Illuminate\Support\Facades\Http::post('http://172.28.237.28/api/link');
+                $tu = \Illuminate\Support\Facades\Http::withHeaders([
+                    'token' => 'ApfrIzxCoK1DwNZOEJCwlrnv6QZ0PCdv'
+                ])->post('http://172.28.237.28/api/link');
                 $url = data_get($tu,'data.url');
                 $after_img = str_replace('127.0.0.1:5000','8.219.142.190',$url);
             }
