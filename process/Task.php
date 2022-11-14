@@ -78,12 +78,12 @@ class Task
             echo "56进球推送推送：".date('Y-m-d H:i:s')."\n";
         });
 
-        new Crontab('18 */1 * * * *', function(){
+        new Crontab('28 */1 * * * *', function(){
             RobotPushService::make()->pushMetaGameSend();
             echo "元宇宙推送：".date('Y-m-d H:i:s')."\n";
         });
 
-        new Crontab('18 */1 * * * *', function(){
+        new Crontab('48 */1 * * * *', function(){
             RobotPushService::make()->pushMetaGameEndSend();
             echo "元宇宙结果推送：".date('Y-m-d H:i:s')."\n";
         });
